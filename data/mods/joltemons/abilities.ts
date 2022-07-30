@@ -1170,7 +1170,7 @@ export const Abilities: {[k: string]: ModdedAbilityData} = {
 		},
 		onDamagingHitOrder: 1,
 		onDamagingHit(damage, target, source, move) {
-			if (move.flags['contact'])) {
+			if (move.flags['contact']) {
 				this.add('-ability', target, 'Prickly Coat');
 				if (move.type === 'Poison' || target.hasType('Poison')) {
 					target.side.foe.addSideCondition('toxicspikes');
@@ -2005,7 +2005,7 @@ export const Abilities: {[k: string]: ModdedAbilityData} = {
 	},
 	soulblade: {
 		onModifyDamage(damage, source, target, move) {
-				return this.chainModify([0x1199, 0x1000]);
+			return this.chainModify([0x1199, 0x1000]);
 		},
 		name: "Soul Blade",
 	},
