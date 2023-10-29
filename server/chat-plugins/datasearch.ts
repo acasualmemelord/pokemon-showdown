@@ -928,7 +928,7 @@ function runDexsearch(target: string, cmd: string, canAll: boolean, message: str
 				(
 					nationalSearch &&
 					species.isNonstandard &&
-					!["Custom", "Glitch", "Pokestar"].includes(species.isNonstandard)
+					!["Custom", "Glitch", "Pokestar", "Future"].includes(species.isNonstandard)
 				) ||
 				(species.tier !== 'Unreleased' && species.tier !== 'Illegal')
 			) &&
@@ -971,6 +971,7 @@ function runDexsearch(target: string, cmd: string, canAll: boolean, message: str
 
 			if (alts.tiers && Object.keys(alts.tiers).length) {
 				let tier = dex[mon].tier;
+				if (nationalSearch) tier = dex[mon].natDexTier;
 				if (tier.startsWith('(') && tier !== '(PU)') tier = tier.slice(1, -1) as TierTypes.Singles;
 				// if (tier === 'New') tier = 'OU';
 				if (alts.tiers[tier]) continue;

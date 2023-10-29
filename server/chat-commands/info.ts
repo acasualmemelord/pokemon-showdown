@@ -601,12 +601,13 @@ export const commands: Chat.ChatCommands = {
 					if (room.battle.format.includes('doubles') || room.battle.format.includes('vgc')) {
 						tierDisplay = 'doubles tiers';
 					} else if (room.battle.format.includes('nationaldex')) {
-						tierDisplay = 'numbers';
+						tierDisplay = 'National Dex tiers';
 					}
 				}
 				if (!tierDisplay) tierDisplay = 'tiers';
 				const displayedTier = tierDisplay === 'tiers' ? pokemon.tier :
 					tierDisplay === 'doubles tiers' ? pokemon.doublesTier :
+					tierDisplay === 'National Dex tiers' ? pokemon.natDexTier :
 					pokemon.num >= 0 ? String(pokemon.num) : pokemon.tier;
 				buffer += `|raw|${Chat.getDataPokemonHTML(pokemon, dex.gen, displayedTier)}\n`;
 				if (showDetails) {
@@ -1544,7 +1545,7 @@ export const commands: Chat.ChatCommands = {
 			`+ <strong>Voice</strong> - They can use ! commands like !groups`,
 			`% <strong>Driver</strong> - The above, and they can mute and warn`,
 			`@ <strong>Moderator</strong> - The above, and they can room ban users`,
-			`* <strong>Bot</strong> - Like Moderator, but makes it clear that this user is a bot`,
+			`* <strong>Bot</strong> - An automated account that can mute, warn, and use HTML`,
 			`# <strong>Room Owner</strong> - They are leaders of the room and can almost totally control it`,
 		];
 
@@ -1554,7 +1555,7 @@ export const commands: Chat.ChatCommands = {
 			`§ <strong>Section Leader</strong> - They oversee rooms in a particular section`,
 			`% <strong>Global Driver</strong> - Like Voice, and they can lock users and check for alts`,
 			`@ <strong>Global Moderator</strong> - The above, and they can globally ban users`,
-			`* <strong>Global Bot</strong> - Like Moderator, but makes it clear that this user is a bot`,
+			`* <strong>Global Bot</strong> - An automated account that can use HTML anywhere`,
 			`&amp; <strong>Global Administrator</strong> - They can do anything, like change what this message says and promote users globally`,
 		];
 
@@ -2178,8 +2179,8 @@ export const commands: Chat.ChatCommands = {
 				portuguese: 'pt',
 			};
 			let id = pokemon.name.toLowerCase();
-			// Special case for Meowstic-M
 			if (id === 'meowstic') id = 'meowstic-m';
+			if (id === 'zygarde-10%') id = 'zygarde-10';
 			if (['ou', 'uu'].includes(formatId) && generation === 'sm' &&
 				room?.settings.language && room.settings.language in supportedLanguages) {
 				// Limited support for translated analysis
@@ -2590,6 +2591,11 @@ export const commands: Chat.ChatCommands = {
 		room.sendMods(`|uhtmlchange|request-${target}|`);
 		room.sendRankedUsers(`|tempnotifyoff|pendingapprovals`, '%');
 		this.privateModAction(`${user.name} denied ${target}'s request to display ${entry.link}.`);
+
+		const targetUser = Users.get(target);
+		if (!targetUser) return;
+		room.sendUser(targetUser, `|raw|<div class="broadcast-red">Your media request was denied.</div>`);
+		room.sendUser(targetUser, `|notify|Media request denied`);
 	},
 	denyshowhelp: [`/denyshow [user] - Denies the media display request of [user]. Requires: % @ # &`],
 
