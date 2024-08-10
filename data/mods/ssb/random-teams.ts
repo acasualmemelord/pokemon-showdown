@@ -1,4 +1,4 @@
-import RandomTeams from '../../random-teams';
+import RandomGen8Teams from '../gen8/random-teams';
 
 export interface SSBSet {
 	species: string;
@@ -125,12 +125,6 @@ export const ssbSets: SSBSets = {
 		moves: ['Waterfall', 'Icicle Crash', 'No Retreat'],
 		signatureMove: 'Broadside Barrage',
 		evs: {atk: 252, def: 4, spe: 252}, nature: 'Jolly',
-	},
-	Averardo: {
-		species: 'Hattrem', ability: 'Magic Hat', item: 'Eviolite', gender: 'M',
-		moves: ['Nuzzle', 'Flamethrower', 'Healing Wish'],
-		signatureMove: 'Hat of Wisdom',
-		evs: {hp: 252, def: 4, spd: 252}, ivs: {atk: 0}, nature: 'Sassy',
 	},
 	'awa!': {
 		species: 'Lycanroc', ability: 'Sand Rush', item: 'Life Orb', gender: 'F',
@@ -466,6 +460,12 @@ export const ssbSets: SSBSets = {
 		signatureMove: '/nexthunt',
 		evs: {hp: 4, atk: 252, spe: 252}, nature: 'Adamant', shiny: true,
 	},
+	Lunala: {
+		species: 'Hattrem', ability: 'Magic Hat', item: 'Eviolite', gender: 'F',
+		moves: ['Nuzzle', 'Flamethrower', 'Healing Wish'],
+		signatureMove: 'Hat of Wisdom',
+		evs: {hp: 252, def: 4, spd: 252}, ivs: {atk: 0}, nature: 'Sassy',
+	},
 	'Mad Monty ¾°': {
 		species: 'Zekrom', ability: 'Petrichor', item: 'Damp Rock', gender: 'N',
 		moves: ['Bolt Strike', 'Dragon Claw', 'Liquidation'],
@@ -611,12 +611,6 @@ export const ssbSets: SSBSets = {
 		signatureMove: 'Croak',
 		evs: {hp: 248, def: 8, spd: 252}, ivs: {atk: 0}, nature: 'Calm',
 	},
-	quadrophenic: {
-		species: 'Dodrio', ability: 'Extreme Ways', item: 'Choice Band', gender: 'N',
-		moves: ['Dragon Ascent', 'Close Combat', 'U-turn'],
-		signatureMove: 'Triple Threat',
-		evs: {atk: 252, spd: 4, spe: 252}, nature: 'Jolly',
-	},
 	Rabia: {
 		species: 'Mew', ability: 'Psychic Surge', item: 'Life Orb', gender: 'M',
 		moves: ['Nasty Plot', ['Flamethrower', 'Fire Blast'], 'Roost'],
@@ -679,7 +673,7 @@ export const ssbSets: SSBSets = {
 		evs: {atk: 204, spa: 200, spe: 104}, nature: 'Hasty',
 		skip: 'Robb576', // This set is transformed into by The Numbers Game ability
 	},
-	SectoniaServant: {
+	Sectonia: {
 		species: 'Reuniclus', ability: 'Royal Aura', item: 'Leftovers', gender: 'M',
 		moves: ['Eerie Spell', 'Moonblast', 'Recover'],
 		signatureMove: 'Homunculus\'s Vanity',
@@ -867,13 +861,25 @@ export const ssbSets: SSBSets = {
 	},
 };
 
-export class RandomStaffBrosTeams extends RandomTeams {
+const afdSSBSets: SSBSets = {
+	'Fox': {
+		species: 'Delphox', ability: 'No Ability', item: '', gender: '',
+		moves: [],
+		signatureMove: 'Super Metronome',
+	},
+};
+
+export class RandomStaffBrosTeams extends RandomGen8Teams {
 	randomStaffBrosTeam(options: {inBattle?: boolean} = {}) {
+		this.enforceNoDirectCustomBanlistChanges();
+
 		const team: PokemonSet[] = [];
 		const debug: string[] = []; // Set this to a list of SSB sets to override the normal pool for debugging.
 		const ruleTable = this.dex.formats.getRuleTable(this.format);
+		const wiiulegacy = !ruleTable.has('dynamaxclause');
 		const monotype = ruleTable.has('sametypeclause') ? this.sample([...this.dex.types.names()]) : false;
-		let pool = debug.length ? debug : Object.keys(ssbSets);
+
+		let pool = debug.length ? debug : wiiulegacy ? Object.keys(afdSSBSets) : Object.keys(ssbSets);
 		if (monotype && !debug.length) {
 			pool = pool.filter(x => this.dex.species.get(ssbSets[x].species).types.includes(monotype));
 		}
@@ -882,12 +888,12 @@ export class RandomStaffBrosTeams extends RandomTeams {
 		while (pool.length && team.length < this.maxTeamSize) {
 			if (depth >= 200) throw new Error(`Infinite loop in Super Staff Bros team generation.`);
 			depth++;
-			const name = this.sampleNoReplace(pool);
-			const ssbSet: SSBSet = this.dex.deepClone(ssbSets[name]);
+			const name = wiiulegacy ? this.sample(pool) : this.sampleNoReplace(pool);
+			const ssbSet: SSBSet = wiiulegacy ? this.dex.deepClone(afdSSBSets[name]) : this.dex.deepClone(ssbSets[name]);
 			if (ssbSet.skip) continue;
 
 			// Enforce typing limits
-			if (!(debug.length || monotype)) { // Type limits are ignored when debugging or for monotype variations.
+			if (!(debug.length || monotype || wiiulegacy)) { // Type limits are ignored for debugging, monotype, or memes.
 				const species = this.dex.species.get(ssbSet.species);
 				if (this.forceMonotype && !species.types.includes(this.forceMonotype)) continue;
 
@@ -930,7 +936,7 @@ export class RandomStaffBrosTeams extends RandomTeams {
 				evs: ssbSet.evs ? {...{hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0}, ...ssbSet.evs} :
 				{hp: 84, atk: 84, def: 84, spa: 84, spd: 84, spe: 84},
 				ivs: {...{hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31}, ...ssbSet.ivs},
-				level: ssbSet.level || 100,
+				level: this.adjustLevel || ssbSet.level || 100,
 				happiness: typeof ssbSet.happiness === 'number' ? ssbSet.happiness : 255,
 				shiny: typeof ssbSet.shiny === 'number' ? this.randomChance(1, ssbSet.shiny) : !!ssbSet.shiny,
 			};
@@ -943,6 +949,20 @@ export class RandomStaffBrosTeams extends RandomTeams {
 
 			// Any set specific tweaks occur here.
 			if (set.name === 'Marshmallon' && !set.moves.includes('Head Charge')) set.moves[this.random(3)] = 'Head Charge';
+
+			if (wiiulegacy) {
+				const egg = this.random(100);
+				if (egg === 69) {
+					set.name = 'Falco';
+					set.species = 'Swellow';
+				} else if (egg === 96) {
+					set.name = 'Captain Falcon';
+					set.species = 'Talonflame';
+				}
+				if (this.randomChance(1, 100)) {
+					set.item = 'Mail';
+				}
+			}
 
 			team.push(set);
 

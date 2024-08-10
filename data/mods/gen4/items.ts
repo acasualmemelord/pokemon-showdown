@@ -32,22 +32,34 @@ export const Items: {[k: string]: ModdedItemData} = {
 	},
 	choiceband: {
 		inherit: true,
-		onStart() { },
+		onStart() {},
+		onModifyMove() {},
+		onAfterMove(pokemon) {
+			pokemon.addVolatile('choicelock');
+		},
 	},
 	choicescarf: {
 		inherit: true,
-		onStart() { },
+		onStart() {},
+		onModifyMove() {},
+		onAfterMove(pokemon) {
+			pokemon.addVolatile('choicelock');
+		},
 	},
 	choicespecs: {
 		inherit: true,
-		onStart() { },
+		onStart() {},
+		onModifyMove() {},
+		onAfterMove(pokemon) {
+			pokemon.addVolatile('choicelock');
+		},
 	},
 	chopleberry: {
 		inherit: true,
 		onSourceModifyDamage(damage, source, target, move) {
 			if (move.causedCrashDamage) return damage;
 			if (move.type === 'Fighting' && target.getMoveHitData(move).typeMod > 0) {
-				const hitSub = target.volatiles['substitute'] && !move.flags['authentic'];
+				const hitSub = target.volatiles['substitute'] && !move.flags['bypasssub'];
 				if (hitSub) return;
 
 				if (target.eatItem()) {
@@ -101,6 +113,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 			}
 		},
 	},
+	fastball: {
+		inherit: true,
+		isNonstandard: null,
+	},
 	flameorb: {
 		inherit: true,
 		onResidualOrder: 10,
@@ -136,6 +152,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 			}
 		},
 	},
+	heavyball: {
+		inherit: true,
+		isNonstandard: null,
+	},
 	ironball: {
 		inherit: true,
 		onEffectiveness() {},
@@ -169,6 +189,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 		onResidualOrder: 10,
 		onResidualSubOrder: 4,
 	},
+	levelball: {
+		inherit: true,
+		isNonstandard: null,
+	},
 	lifeorb: {
 		inherit: true,
 		onModifyDamage() {},
@@ -180,7 +204,7 @@ export const Items: {[k: string]: ModdedItemData} = {
 			return basePower;
 		},
 		onModifyDamagePhase2(damage, source, target, move) {
-			return damage * 1.3;
+			if (!move.flags['futuremove']) return damage * 1.3;
 		},
 		condition: {
 			duration: 1,
@@ -194,16 +218,17 @@ export const Items: {[k: string]: ModdedItemData} = {
 	},
 	lightball: {
 		inherit: true,
-		onModifyAtk(atk, pokemon) {
+		onModifyAtk() {},
+		onModifySpA() {},
+		onBasePower(basePower, pokemon) {
 			if (pokemon.species.name === 'Pikachu') {
 				return this.chainModify(2);
 			}
 		},
-		onModifySpA(spa, pokemon) {
-			if (pokemon.species.name === 'Pikachu') {
-				return this.chainModify(2);
-			}
-		},
+	},
+	loveball: {
+		inherit: true,
+		isNonstandard: null,
 	},
 	luckypunch: {
 		inherit: true,
@@ -212,6 +237,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 				return critRatio + 2;
 			}
 		},
+	},
+	lureball: {
+		inherit: true,
+		isNonstandard: null,
 	},
 	lustrousorb: {
 		inherit: true,
@@ -277,6 +306,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 			},
 		},
 	},
+	moonball: {
+		inherit: true,
+		isNonstandard: null,
+	},
 	razorfang: {
 		inherit: true,
 		onModifyMove(move) {
@@ -291,6 +324,10 @@ export const Items: {[k: string]: ModdedItemData} = {
 				});
 			}
 		},
+	},
+	sportball: {
+		inherit: true,
+		isNonstandard: null,
 	},
 	stick: {
 		inherit: true,

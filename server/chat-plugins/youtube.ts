@@ -10,6 +10,7 @@ import {Utils, FS, Net} from '../../lib';
 
 const ROOT = 'https://www.googleapis.com/youtube/v3/';
 const STORAGE_PATH = 'config/chat-plugins/youtube.json';
+const GROUPWATCH_ROOMS = ['youtube', 'pokemongames', 'videogames', 'smashbros', 'pokemongo', 'hindi'];
 
 export const videoDataCache: Map<string, VideoData> = Chat.oldPlugins.youtube?.videoDataCache || new Map();
 export const searchDataCache: Map<string, string[]> = Chat.oldPlugins.youtube?.searchDataCache || new Map();
@@ -170,7 +171,7 @@ export class YoutubeInterface {
 			raw = await Net(`${ROOT}videos`).get({
 				query: {part: 'snippet,statistics', id, key: Config.youtubeKey},
 			});
-		} catch (e) {
+		} catch (e: any) {
 			throw new Chat.ErrorMessage(`Failed to retrieve video data: ${e.message}.`);
 		}
 		const res = JSON.parse(raw);
@@ -226,7 +227,7 @@ export class YoutubeInterface {
 		if (id.includes('?')) id = id.split('?')[0];
 		return id;
 	}
-	async generateVideoDisplay(link: string, fullInfo = false) {
+	async generateVideoDisplay(link: string, fullInfo = false, broadcasting = false) {
 		if (!Config.youtubeKey) {
 			throw new Chat.ErrorMessage(`This server does not support YouTube commands. If you're the owner, you can enable them by setting up Config.youtubekey.`);
 		}
@@ -236,7 +237,12 @@ export class YoutubeInterface {
 		if (!fullInfo) {
 			let buf = `<b>${info.title}</b> `;
 			buf += `(<a class="subtle" href="https://youtube.com/channel/${info.channelUrl}">${info.channelTitle}</a>)<br />`;
-			buf += `<youtube src="https://www.youtube.com/embed/${id}" />`;
+			if (broadcasting) {
+				buf += `<button class="button" name="send" value="/show https://www.youtube.com/watch?v=${id}">`;
+				buf += `Click to view "${info.title}"</button>`;
+			} else {
+				buf += `<youtube src="https://www.youtube.com/embed/${id}" />`;
+			}
 			return buf;
 		}
 		let buf = `<table style="margin:0px;"><tr>`;
@@ -305,11 +311,6 @@ export class YoutubeInterface {
 		const id = this.getId(url);
 		const videoInfo = await this.getVideoData(id);
 		if (!videoInfo) throw new Chat.ErrorMessage(`Video not found.`);
-		if ([...Rooms.rooms.values()].some(r => r.roomid.startsWith('video-watch-'))) {
-			throw new Chat.ErrorMessage(
-				`A groupwatch is already going on. Please wait until it is done before creating another.`
-			);
-		}
 		const num = baseRoom.nextGameNumber();
 		baseRoom.saveSettings();
 		const gameRoom = Rooms.createGameRoom(`video-watch-${num}` as RoomID, Utils.html`[Group Watch] ${title}`, {
@@ -336,7 +337,7 @@ export const Twitch = new class {
 				},
 				query: {query: channel},
 			});
-		} catch (e) {
+		} catch (e: any) {
 			throw new Chat.ErrorMessage(`Error retrieving twitch channel: ${e.message}`);
 		}
 		const data = JSON.parse(res);
@@ -362,7 +363,7 @@ export const Twitch = new class {
 	}
 };
 
-export class GroupWatch extends Rooms.RoomGame {
+export class GroupWatch extends Rooms.SimpleRoomGame {
 	url: string;
 	info: VideoData;
 	started: number | null = null;
@@ -435,7 +436,7 @@ export class GroupWatch extends Rooms.RoomGame {
 	}
 }
 
-export class TwitchStream extends Rooms.RoomGame {
+export class TwitchStream extends Rooms.SimpleRoomGame {
 	started = false;
 	data: TwitchChannel;
 	constructor(room: Room, data: TwitchChannel) {
@@ -503,9 +504,7 @@ export class TwitchStream extends Rooms.RoomGame {
 	}
 	getStreamDisplay() {
 		let buf = `<p style="background: #6441a5; padding: 5px;border-radius:8px;color:white;font-weight:bold;text-align:center;">`;
-		buf += `<br /><br /><strong>Watching ${this.data.display_name}</strong><br />`;
-		buf += `<twitch src="${this.data.url}">`;
-		buf += `<br />`.repeat(4);
+		buf += `<twitch src="${this.data.url}" width="600" height="330" />`;
 		return buf;
 	}
 }
@@ -686,7 +685,10 @@ export const commands: Chat.ChatCommands = {
 			this.privateModAction(`${user.name} removed the channel ${channel.name} from the category ${category}.`);
 		},
 		async groupwatch(target, room, user) {
-			room = this.requireRoom('youtube' as RoomID);
+			room = this.requireRoom();
+			if (!GROUPWATCH_ROOMS.includes(room.roomid)) {
+				return this.errorReply(`This room is not allowed to use the groupwatch function.`);
+			}
 			this.checkCan('mute', null, room);
 			const [url, title] = Utils.splitFirst(target, ',').map(p => p.trim());
 			if (!url || !title) return this.errorReply(`You must specify a video to watch and a title for the group watch.`);
@@ -756,7 +758,7 @@ export const commands: Chat.ChatCommands = {
 		},
 		async watch(target, room, user) {
 			room = this.requireRoom();
-			if (!['youtube', 'pokemongo'].includes(room.roomid)) {
+			if (!GROUPWATCH_ROOMS.includes(room.roomid)) {
 				throw new Chat.ErrorMessage(`You cannot use this command in this room.`);
 			}
 			this.checkCan('mute', null, room);

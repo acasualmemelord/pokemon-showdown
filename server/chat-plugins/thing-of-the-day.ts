@@ -9,9 +9,9 @@ const DATA_FILE = 'config/chat-plugins/otds.json';
 
 export const prenoms: {[k: string]: [string, AnyObject][]} = JSON.parse(FS(PRENOMS_FILE).readIfExistsSync() || "{}");
 export const otdData: OtdData = JSON.parse(FS(DATA_FILE).readIfExistsSync() || "{}");
-export const otds: Map<string, OtdHandler> = new Map();
+export const otds = new Map<string, OtdHandler>();
 
-const FINISH_HANDLERS: {[k: string]: (winner: AnyObject) => void} = {
+const FINISH_HANDLERS: {[k: string]: (winner: AnyObject) => Promise<void>} = {
 	cotw: async winner => {
 		const {channel, nominator} = winner;
 		const searchResults = await YouTube.searchChannel(channel, 1);
@@ -394,7 +394,7 @@ class OtdHandler {
 			try {
 				const [width, height] = await Chat.fitImage(winner.image, 100, 100);
 				output += Utils.html `<td><img src="${winner.image}" width=${width} height=${height}></td>`;
-			} catch (err) {}
+			} catch {}
 		}
 		output += `<td style="text-align:right;margin:5px;">`;
 		if (winner.event) output += Utils.html `<b>Event:</b> ${winner.event}<br />`;
@@ -678,7 +678,9 @@ export const otdCommands: Chat.ChatCommands = {
 			key = key.trim();
 			const value = values.join(':').trim();
 
-			if (!handler.keys.includes(key)) return this.errorReply(`Invalid value for property: ${key}`);
+			if (!handler.keys.includes(key)) {
+				return this.errorReply(`Invalid key: '${key}'. Valid keys: ${handler.keys.join(', ')}`);
+			}
 
 			switch (key) {
 			case 'artist':
@@ -694,6 +696,7 @@ export const otdCommands: Chat.ChatCommands = {
 			case 'tagline':
 			case 'match':
 			case 'event':
+			case 'videogame':
 				if (!value.length || value.length > 150) return this.errorReply(`Please enter a valid ${key}.`);
 				break;
 			case 'sport':
@@ -716,7 +719,11 @@ export const otdCommands: Chat.ChatCommands = {
 				if (isNaN(num) || num < 1 || num > 100) return this.errorReply('Please enter a valid number as an age');
 				break;
 			default:
-				return this.errorReply(`Invalid value for property: ${key}`);
+				// another custom key w/o validation
+				if (!toNominationId(value)) {
+					return this.errorReply(`No value provided for key ${key}.`);
+				}
+				break;
 			}
 
 			changelist[key] = value;
@@ -792,7 +799,7 @@ export const commands: Chat.ChatCommands = {
 	otd: {
 		create(target, room, user) {
 			room = this.requireRoom();
-			if (room.settings.isPrivate !== undefined) {
+			if (room.settings.isPrivate) {
 				return this.errorReply(`This command is only available in public rooms`);
 			}
 			const count = [...otds.values()].filter(otd => otd.room.roomid === room!.roomid).length;
@@ -922,14 +929,24 @@ for (const [k, v] of otds) {
 	commands[`${k}help`] = otdHelp;
 }
 
-export const onRenameRoom: Rooms.RenameHandler = (oldID, newID, room) => {
-	for (const otd in otdData) {
-		const data = otdData[otd];
-		if (data.settings.roomid === oldID) {
-			data.settings.roomid = newID;
-			const handler = otds.get(otd);
-			handler!.room = room as Room;
-			handler!.save();
+export const handlers: Chat.Handlers = {
+	onRenameRoom(oldID, newID, room) {
+		for (const otd in otdData) {
+			const data = otdData[otd];
+			if (data.settings.roomid === oldID) {
+				data.settings.roomid = newID;
+				const handler = otds.get(otd);
+				handler!.room = room as Room;
+				handler!.save();
+			}
 		}
+	},
+};
+
+export const punishmentfilter: Chat.PunishmentFilter = (user, punishment) => {
+	user = toID(user);
+	if (!['NAMELOCK', 'BAN'].includes(punishment.type)) return;
+	for (const handler of otds.values()) {
+		handler.removeNomination(user);
 	}
 };

@@ -18,10 +18,10 @@ export type ModdedItemData = ItemData | Partial<Omit<ItemData, 'name'>> & {
 };
 
 export class Item extends BasicEffect implements Readonly<BasicEffect> {
-	readonly effectType: 'Item';
+	declare readonly effectType: 'Item';
 
 	/** just controls location on the item spritesheet */
-	readonly num!: number;
+	declare readonly num: number;
 
 	/**
 	 * A Move-like object depicting what happens when Fling is used on
@@ -89,19 +89,21 @@ export class Item extends BasicEffect implements Readonly<BasicEffect> {
 	/** Is this item a Pokeball? */
 	readonly isPokeball: boolean;
 
-	readonly condition?: ConditionData;
-	readonly forcedForme?: string;
-	readonly isChoice?: boolean;
-	readonly naturalGift?: {basePower: number, type: string};
-	readonly spritenum?: number;
-	readonly boosts?: SparseBoostsTable | false;
+	declare readonly condition?: ConditionData;
+	declare readonly forcedForme?: string;
+	declare readonly isChoice?: boolean;
+	declare readonly naturalGift?: {basePower: number, type: string};
+	declare readonly spritenum?: number;
+	declare readonly boosts?: SparseBoostsTable | false;
 
-	readonly onEat?: ((this: Battle, pokemon: Pokemon) => void) | false;
-	readonly onPrimal?: (this: Battle, pokemon: Pokemon) => void;
-	readonly onStart?: (this: Battle, target: Pokemon) => void;
+	declare readonly onEat?: ((this: Battle, pokemon: Pokemon) => void) | false;
+	declare readonly onPrimal?: (this: Battle, pokemon: Pokemon) => void;
+	declare readonly onStart?: (this: Battle, target: Pokemon) => void;
+	declare readonly onEnd?: (this: Battle, target: Pokemon) => void;
 
 	constructor(data: AnyObject) {
 		super(data);
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		data = this;
 
 		this.fullname = `item: ${this.name}`;
@@ -122,7 +124,11 @@ export class Item extends BasicEffect implements Readonly<BasicEffect> {
 		this.isPokeball = !!data.isPokeball;
 
 		if (!this.gen) {
-			if (this.num >= 689) {
+			if (this.num >= 1124) {
+				this.gen = 9;
+			} else if (this.num >= 927) {
+				this.gen = 8;
+			} else if (this.num >= 689) {
 				this.gen = 7;
 			} else if (this.num >= 577) {
 				this.gen = 6;
@@ -189,7 +195,7 @@ export class DexItems {
 				(item as any).isNonstandard = 'Future';
 			}
 			// hack for allowing mega evolution in LGPE
-			if (this.dex.currentMod === 'letsgo' && !item.isNonstandard && !item.megaStone) {
+			if (this.dex.currentMod === 'gen7letsgo' && !item.isNonstandard && !item.megaStone) {
 				(item as any).isNonstandard = 'Past';
 			}
 		} else {

@@ -155,7 +155,7 @@ export const commands: Chat.ChatCommands = {
 		room.saveSettings();
 	},
 	modchathelp: [
-		`/modchat [off/autoconfirmed/trusted/+/%/@/*/player/#/&] - Set the level of moderated chat. Requires: % \u2606 for off/autoconfirmed/+ options, * @ # & for all the options`,
+		`/modchat [off/autoconfirmed/trusted/+/%/@/*/player/#/&] - Set the level of moderated chat. Requires: % \u2606 for off/autoconfirmed/+/player options, * @ # & for all the options`,
 	],
 
 	automodchat(target, room, user) {
@@ -201,7 +201,8 @@ export const commands: Chat.ChatCommands = {
 		room.saveSettings();
 	},
 	automodchathelp: [
-		`/automodchat [number], [rank] - Sets modchat [rank] to automatically turn on after [number] minutes. [number] must be between 5 and 480. Requires: # &`,
+		`/automodchat [number], [rank] - Sets modchat [rank] to automatically turn on after [number] minutes with no staff.`,
+		`[number] must be between 5 and 480. Requires: # &`,
 		`/automodchat off - Turns off automodchat.`,
 	],
 
@@ -280,6 +281,7 @@ export const commands: Chat.ChatCommands = {
 			this.add(`|raw|<div class="broadcast-blue"><strong>This room is no longer invite only!</strong><br />Anyone may now join.</div>`);
 			this.addModAction(`${user.name} turned off modjoin.`);
 			this.modlog('MODJOIN', null, 'OFF');
+			if (room.battle) room.battle.inviteOnlySetter = null;
 			room.saveSettings();
 			return;
 		} else if (target === 'sync') {
@@ -313,8 +315,15 @@ export const commands: Chat.ChatCommands = {
 		}
 		room.saveSettings();
 		if (target === 'sync' && !room.settings.modchat) {
-			const lowestStaffGroup = Config.groupsranking.filter(group => Config.groups[group]?.mute)[0];
-			if (lowestStaffGroup) void this.parse(`/modchat ${lowestStaffGroup}`);
+			const lowestGroup = Config.groupsranking.filter(group => {
+				const groupInfo = Users.Auth.getGroup(group);
+				return (
+					groupInfo.symbol !== Users.Auth.defaultSymbol() &&
+					room!.auth.atLeast(user, group) &&
+					Users.Auth.isValidSymbol(groupInfo.symbol)
+				);
+			})[0];
+			if (lowestGroup) void this.parse(`/modchat ${lowestGroup}`);
 		}
 		if (!room.settings.isPrivate) return this.parse('/hiddenroom');
 	},
@@ -383,16 +392,23 @@ export const commands: Chat.ChatCommands = {
 	permissions: {
 		clear: 'set',
 		set(target, room, user) {
-			let [perm, rank] = this.splitOne(target);
+			const [perm, displayRank] = this.splitOne(target);
 			room = this.requireRoom();
+			let rank = displayRank;
 			if (rank === 'default') rank = '';
+			if (rank === 'all users') rank = Users.Auth.defaultSymbol();
 			if (!room.persist) return this.errorReply(`This room does not allow customizing permissions.`);
 			if (!target || !perm) return this.parse(`/permissions help`);
 			if (rank && rank !== 'whitelist' && !Config.groupsranking.includes(rank as EffectiveGroupSymbol)) {
 				return this.errorReply(`${rank} is not a valid rank.`);
 			}
 			const validPerms = Users.Auth.supportedRoomPermissions(room);
-			if (!validPerms.some(p => p === perm || p.startsWith(`${perm} `))) {
+			const sanitizedPerm = perm.replace('!', '/'); // handles ! commands so we don't have to add commands to the array twice
+			if (!validPerms.some(p => (
+				// we need to check the raw permissions also because broadcast permissions are listed with the !
+				p === sanitizedPerm || p === perm ||
+				p.startsWith(`${sanitizedPerm} `) || p.startsWith(`${perm} `)
+			))) {
 				return this.errorReply(`${perm} is not a valid room permission.`);
 			}
 			if (!room.auth.atLeast(user, '#')) {
@@ -407,7 +423,7 @@ export const commands: Chat.ChatCommands = {
 
 			const currentPermissions = room.settings.permissions || {};
 			if (currentPermissions[perm] === (rank || undefined)) {
-				return this.errorReply(`${perm} is already set to ${rank || 'default'}.`);
+				return this.errorReply(`${perm} is already set to ${displayRank || 'default'}.`);
 			}
 
 			if (rank) {
@@ -419,10 +435,9 @@ export const commands: Chat.ChatCommands = {
 			}
 			room.saveSettings();
 
-			if (!rank) rank = `default`;
-			this.modlog(`SETPERMISSION`, null, `${perm}: ${rank}`);
+			this.modlog(`SETPERMISSION`, null, `${perm}: ${displayRank}`);
 			this.refreshPage(`permissions-${room.roomid}`);
-			return this.privateModAction(`${user.name} set the required rank for ${perm} to ${rank}.`);
+			return this.privateModAction(`${user.name} set the required rank for ${perm} to ${displayRank}.`);
 		},
 		sethelp: [
 			`/permissions set [command], [rank symbol] - sets the required permission to use the command [command] to [rank]. Requires: # &`,
@@ -438,17 +453,19 @@ export const commands: Chat.ChatCommands = {
 			room = this.requireRoom();
 
 			const allPermissions = Users.Auth.supportedRoomPermissions(room);
-			const permissionGroups = allPermissions.filter(perm => !perm.startsWith('/'));
+			const permissionGroups = allPermissions.filter(perm => !perm.startsWith('/') && !perm.startsWith('!'));
 			const permissions = allPermissions.filter(perm => {
 				const handler = Chat.parseCommand(perm)?.handler;
 				if (handler?.isPrivate && !user.can('lock')) return false;
-				return perm.startsWith('/') && !perm.includes(' ');
+				return (perm.startsWith('/') || perm.startsWith('!')) && !perm.includes(' ');
 			});
-			const subPermissions = allPermissions.filter(perm => perm.startsWith('/') && perm.includes(' ')).filter(perm => {
-				const handler = Chat.parseCommand(perm)?.handler;
-				if (handler?.isPrivate && !user.can('lock')) return false;
-				return perm.startsWith('/') && perm.includes(' ');
-			});
+			const subPermissions = allPermissions
+				.filter(perm => (perm.startsWith('/') || perm.startsWith('!')) && perm.includes(' '))
+				.filter(perm => {
+					const handler = Chat.parseCommand(perm)?.handler;
+					if (handler?.isPrivate && !user.can('lock')) return false;
+					return (perm.startsWith('/') || perm.startsWith('!')) && perm.includes(' ');
+				});
 			const subPermissionsByNamespace: {[k: string]: string[]} = {};
 			for (const perm of subPermissions) {
 				const [namespace] = perm.split(' ', 1);
@@ -464,6 +481,7 @@ export const commands: Chat.ChatCommands = {
 			buffer += `<p><strong>Group permissions:</strong> (will affect multiple commands or part of one command)<br />`;
 			buffer += `<code>` + permissionGroups.join(`</code> <code>`) + `</code></p>`;
 			buffer += `<p><details class="readmore"><summary><strong>Single-command permissions:</strong> (will affect one command)</summary>`;
+			buffer += `Permissions starting with <code>!</code> are for broadcasting the command, not using it.<br />`;
 			buffer += `<code>` + permissions.join(`</code> <code>`) + `</code></details></p>`;
 			buffer += `<p><details class="readmore"><summary><strong>Sub-commands:</strong> (will affect one sub-command, like /roomevents view)</summary>`;
 			for (const subPerms of Object.values(subPermissionsByNamespace)) {
@@ -558,6 +576,33 @@ export const commands: Chat.ChatCommands = {
 	},
 	emojifilterhelp: [`/emojifilter [on/off] - Toggles filtering messages in the room for emojis. Requires # &`],
 
+	linkfilter(target, room, user) {
+		room = this.requireRoom();
+		if (!target) {
+			return this.sendReply(
+				`This room's link filter is currently: ${room.settings.filterEmojis ? "ON" : "OFF"}`
+			);
+		}
+		this.checkChat();
+		this.checkCan('editroom', null, room);
+
+		if (this.meansYes(target)) {
+			if (room.settings.filterLinks) return this.errorReply(`This room's link filter is already ON`);
+			room.settings.filterLinks = true;
+		} else if (this.meansNo(target)) {
+			if (!room.settings.filterLinks) return this.errorReply(`This room's link filter is already OFF`);
+			room.settings.filterLinks = false;
+		} else {
+			return this.parse("/help linkfilter");
+		}
+		const setting = (room.settings.filterLinks ? "ON" : "OFF");
+		this.privateModAction(`${user.name} turned the link filter ${setting}`);
+		this.modlog('LINK FILTER', null, setting);
+
+		room.saveSettings();
+	},
+	linkfilterhelp: [`/linkfilter [on/off] - Toggles filtering messages in the room for links. Requires # &`],
+
 	banwords: 'banword',
 	banword: {
 		regexadd: 'add',
@@ -626,16 +671,16 @@ export const commands: Chat.ChatCommands = {
 
 			if (!room.settings.banwords) return this.errorReply("This room has no banned phrases.");
 
-			let words = target.match(/[^,]+(,\d*}[^,]*)?/g);
-			if (!words) return this.parse('/help banword');
+			const regexMatch = target.match(/[^,]+(,\d*}[^,]*)?/g);
+			if (!regexMatch) return this.parse('/help banword');
 
-			words = words.map(word => word.replace(/\n/g, '').trim()).filter(word => word.length > 0);
+			const words = regexMatch.map(word => word.replace(/\n/g, '').trim()).filter(word => word.length > 0);
 
 			for (const word of words) {
 				if (!room.settings.banwords.includes(word)) return this.errorReply(`${word} is not a banned phrase in this room.`);
 			}
 
-			room.settings.banwords = room.settings.banwords.filter(w => !words!.includes(w));
+			room.settings.banwords = room.settings.banwords.filter(w => !words.includes(w));
 			room.banwordRegex = null;
 			if (words.length > 1) {
 				this.privateModAction(`The banwords ${words.map(w => `'${w}'`).join(', ')} were removed by ${user.name}.`);
@@ -703,6 +748,10 @@ export const commands: Chat.ChatCommands = {
 		room.saveSettings();
 		return this.modlog(`SHOWAPPROVALS`, null, `${this.meansYes(target) ? `ON` : `OFF`}`);
 	},
+	showapprovalshelp: [
+		`/showapprovals [setting] - Enable or disable the use of media approvals in the current room.`,
+		`Requires: # &`,
+	],
 
 	showmedia(target, room, user) {
 		this.errorReply(`/showmedia has been deprecated. Use /permissions instead.`);
@@ -712,7 +761,7 @@ export const commands: Chat.ChatCommands = {
 	hightraffic(target, room, user) {
 		room = this.requireRoom();
 		if (!target) {
-			return this.sendReply(`This room is: ${!room.settings.highTraffic ? 'high traffic' : 'low traffic'}`);
+			return this.sendReply(`This room is: ${room.settings.highTraffic ? 'high traffic' : 'low traffic'}`);
 		}
 		this.checkCan('makeroom');
 
@@ -1006,15 +1055,15 @@ export const commands: Chat.ChatCommands = {
 			if (target.includes(',') || target.includes('|') || target.includes('[') || target.includes('-')) {
 				return this.errorReply("Room titles can't contain any of: ,|[-");
 			}
-			target = `[G] ${target}`;
 		} else {
 			this.checkCan('makeroom');
 		}
 		const creatorID = room.roomid.split('-')[1];
 		const id = isGroupchat ? `groupchat-${creatorID}-${toID(target)}` as RoomID : undefined;
+		const title = isGroupchat ? `[G] ${target}` : target;
 		const oldID = room.roomid;
 
-		room.rename(target, id);
+		room.rename(title, id);
 
 		Chat.handleRoomRename(oldID, id || toID(target) as RoomID, room);
 
@@ -1036,6 +1085,7 @@ export const commands: Chat.ChatCommands = {
 	hiddenroom: 'privateroom',
 	secretroom: 'privateroom',
 	publicroom: 'privateroom',
+	unlistroom: 'privateroom',
 	privateroom(target, room, user, connection, cmd) {
 		room = this.requireRoom();
 		if (room.battle) {
@@ -1053,7 +1103,7 @@ export const commands: Chat.ChatCommands = {
 			// higher permissions to modify privacy settings
 			this.checkCan('makeroom');
 		}
-		let setting: boolean | 'hidden';
+		let setting: boolean | 'hidden' | 'unlisted';
 		switch (cmd) {
 		case 'privateroom':
 			return this.parse('/help privateroom');
@@ -1061,7 +1111,12 @@ export const commands: Chat.ChatCommands = {
 			setting = false;
 			break;
 		case 'secretroom':
+			this.checkCan('rangeban');
 			setting = true;
+			break;
+		case 'unlistroom':
+			this.checkCan('rangeban');
+			setting = 'unlisted';
 			break;
 		default:
 			if (room.settings.isPrivate === true && target !== 'force') {
@@ -1234,6 +1289,7 @@ export const commands: Chat.ChatCommands = {
 		this.modlog('UNSUBROOM');
 		return this.addModAction(`This room was unset as a subroom by ${user.name}.`);
 	},
+	unsubroomhelp: [`/unsubroom - Unmarks the current room as a subroom. Requires: &`],
 
 	parentroom: 'subrooms',
 	subrooms(target, room, user, connection, cmd) {
@@ -1298,6 +1354,7 @@ export const commands: Chat.ChatCommands = {
 		this.modlog('ROOMDESC', null, `to "${target}"`);
 		room.saveSettings();
 	},
+	roomdeschelp: [`/roomdesc [description] - Sets the [description] of the current room. Requires: &`],
 
 	topic: 'roomintro',
 	roomintro(target, room, user, connection, cmd) {
@@ -1332,6 +1389,10 @@ export const commands: Chat.ChatCommands = {
 
 		room.saveSettings();
 	},
+	roomintrohelp: [
+		`/roomintro - Display the room introduction of the current room.`,
+		`/roomintro [content] - Set an introduction for the room. Requires: # &`,
+	],
 
 	deletetopic: 'deleteroomintro',
 	deleteroomintro(target, room, user) {
@@ -1345,6 +1406,7 @@ export const commands: Chat.ChatCommands = {
 		delete room.settings.introMessage;
 		room.saveSettings();
 	},
+	deleteroomintrohelp: [`/deleteroomintro - Deletes the current room's introduction. Requires: # &`],
 
 	stafftopic: 'staffintro',
 	staffintro(target, room, user, connection, cmd) {
@@ -1379,6 +1441,7 @@ export const commands: Chat.ChatCommands = {
 		this.roomlog(room.settings.staffMessage.replace(/\n/g, ``));
 		room.saveSettings();
 	},
+	staffintrohelp: [`/staffintro [content] - Set an introduction for staff members. Requires: @ # &`],
 
 	deletestafftopic: 'deletestaffintro',
 	deletestaffintro(target, room, user) {
@@ -1392,6 +1455,7 @@ export const commands: Chat.ChatCommands = {
 		delete room.settings.staffMessage;
 		room.saveSettings();
 	},
+	deletestaffintrohelp: [`/deletestaffintro - Deletes the current room's staff introduction. Requires: @ # &`],
 
 	roomalias(target, room, user) {
 		room = this.requireRoom();
@@ -1475,6 +1539,7 @@ export const commands: Chat.ChatCommands = {
 		const displayIDToName: {[k: string]: Room['settings']['dataCommandTierDisplay']} = {
 			tiers: 'tiers',
 			doublestiers: 'doubles tiers',
+			nationaldextiers: 'National Dex tiers',
 			numbers: 'numbers',
 		};
 
@@ -1540,6 +1605,8 @@ export const commands: Chat.ChatCommands = {
 			return;
 		}
 		if (this.meansNo(target)) {
+			delete room.settings.defaultFormat;
+			room.saveSettings();
 			this.modlog(`DEFAULTFORMAT`, null, 'off');
 			this.privateModAction(`${user.name} removed this room's default format.`);
 			return;
@@ -1620,6 +1687,14 @@ export const roomSettings: Chat.SettingsHandler[] = [
 		],
 	}),
 	room => ({
+		label: "Link filter",
+		permission: 'editroom',
+		options: [
+			[`off`, !room.settings.filterLinks || 'linkfilter off'],
+			[`on`, room.settings.filterLinks || 'linkfilter on'],
+		],
+	}),
+	room => ({
 		label: "Slowchat",
 		permission: room.userCount < SLOWCHAT_USER_REQUIREMENT ? 'bypassall' as any : 'editroom',
 		options: ['off', 5, 10, 20, 30, 60].map(
@@ -1632,6 +1707,10 @@ export const roomSettings: Chat.SettingsHandler[] = [
 		options: [
 			[`tiers`, (room.settings.dataCommandTierDisplay ?? 'tiers') === 'tiers' || `roomtierdisplay tiers`],
 			[`doubles tiers`, room.settings.dataCommandTierDisplay === 'doubles tiers' || `roomtierdisplay doubles tiers`],
+			[
+				`National Dex tiers`,
+				room.settings.dataCommandTierDisplay === 'National Dex tiers' || `roomtierdisplay National Dex tiers`,
+			],
 			[`numbers`, room.settings.dataCommandTierDisplay === 'numbers' || `roomtierdisplay numbers`],
 		],
 	}),
@@ -1651,7 +1730,7 @@ export const pages: Chat.PageTable = {
 		const room = this.requireRoom();
 		this.checkCan('mute', null, room);
 
-		const roomGroups = ['default', ...Config.groupsranking.slice(1)];
+		const roomGroups = ['default', 'all users', ...Config.groupsranking.slice(1)];
 		const permissions = room.settings.permissions || {};
 
 		let buf = `<div class="pad"><h2>Command permissions for ${room.title}</h2>`;

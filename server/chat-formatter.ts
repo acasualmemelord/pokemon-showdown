@@ -22,7 +22,7 @@ REGEXFREE SOURCE FOR LINKREGEX
 			\b [a-z0-9-]+ ( \. [a-z0-9-]+ )* \.
 			(
 				# followed either a common TLD...
-				com? | org | net | edu | info | us | jp
+				( com? | org | net | edu | info | us | jp ) \b
 			|
 				# or any 2-3 letter TLD followed by a port or /
 				[a-z]{2,3} (?= :[0-9] | / )
@@ -58,7 +58,7 @@ REGEXFREE SOURCE FOR LINKREGEX
 	(?! [^ ]*&gt; )
 
 */
-export const linkRegex = /(?:(?:https?:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*|www\.[a-z0-9-]+(?:\.[a-z0-9-]+)+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=:[0-9]|\/)))(?::[0-9]+)?(?:\/(?:(?:[^\s()&<>]|&amp;|&quot;|\((?:[^\\s()<>&]|&amp;)*\))*(?:[^\s()[\]{}".,!?;:&<>*`^~\\]|\((?:[^\s()<>&]|&amp;)*\)))?)?|[a-z0-9.]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})(?![^ ]*&gt;)/ig;
+export const linkRegex = /(?:(?:https?:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*|www\.[a-z0-9-]+(?:\.[a-z0-9-]+)+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:(?:com?|org|net|edu|info|us|jp)\b|[a-z]{2,3}(?=:[0-9]|\/)))(?::[0-9]+)?(?:\/(?:(?:[^\s()&<>]|&amp;|&quot;|\((?:[^\\s()<>&]|&amp;)*\))*(?:[^\s()[\]{}".,!?;:&<>*`^~\\]|\((?:[^\s()<>&]|&amp;)*\)))?)?|[a-z0-9.]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})(?![^ ]*&gt;)/ig;
 
 type SpanType = '_' | '*' | '~' | '^' | '\\' | '|' | '<' | '[' | '`' | 'a' | 'spoiler' | '>' | '(';
 
@@ -112,8 +112,7 @@ class TextFormatter {
 		this.replaceLinebreaks = this.isTrusted || replaceLinebreaks;
 		this.offset = 0;
 	}
-	// eslint-disable-next-line max-len
-	// debugAt(i=0, j=i+1) { console.log(this.slice(0, i) + '[' + this.slice(i, j) + ']' + this.slice(j, this.str.length)); }
+	// debugAt(i=0, j=i+1) { console.log(`${this.slice(0, i)}[${this.slice(i, j)}]${this.slice(j, this.str.length)}`); }
 
 	slice(start: number, end: number) {
 		return this.str.slice(start, end);

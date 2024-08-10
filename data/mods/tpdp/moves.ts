@@ -1,41 +1,4 @@
-/*
-
-List of flags and their descriptions:
-
-bypasssub: Ignores a target's substitute.
-bite: Power is multiplied by 1.5 when used by a Pokemon with the Strong Jaw Ability.
-bullet: Has no effect on Pokemon with the Bulletproof Ability.
-charge: The user is unable to make a move between turns.
-contact: Makes contact.
-dance: When used by a Pokemon, other Pokemon with the Dancer Ability can attempt to execute the same move.
-defrost: Thaws the user if executed successfully while the user is frozen.
-distance: Can target a Pokemon positioned anywhere in a Triple Battle.
-gravity: Prevented from being executed or selected during Gravity's effect.
-heal: Prevented from being executed or selected during Heal Block's effect.
-mirror: Can be copied by Mirror Move.
-allyanim: Animates when used against allies
-nonsky: Prevented from being executed or selected in a Sky Battle.
-powder: Has no effect on Grass-type Pokemon, Pokemon with the Overcoat Ability, and Pokemon holding Safety Goggles.
-protect: Blocked by Detect, Protect, Spiky Shield, and if not a Status move, King's Shield.
-pulse: Power is multiplied by 1.5 when used by a Pokemon with the Mega Launcher Ability.
-punch: Power is multiplied by 1.2 when used by a Pokemon with the Iron Fist Ability.
-recharge: If this move is successful, the user must recharge on the following turn and cannot make a move.
-reflectable: Bounced back to the original user by Magic Coat or the Magic Bounce Ability.
-slicing: Power is multiplied by 1.5 when used by a Pokemon with the Ability Sharpness.
-snatch: Can be stolen from the original user and instead used by another Pokemon using Snatch.
-sound: Has no effect on Pokemon with the Soundproof Ability.
-wind: Activates the Wind Power and Wind Rider Abilities.
-
-*/
-
-/*
-	--TODO--
-	Go through each TPDP move and make sure it's implemented properly
-*/
-
-export const Moves: {[moveid: string]: MoveData} = {
-	//TOUHOU
-
+export const Moves: {[k: string]: ModdedMoveData} = {
 	atempo: {
 		name: "A Tempo",
 		shortDesc: "Clears everyone's stat modifiers.",
@@ -43,7 +6,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -68,13 +31,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 85,
 		priority: 0,
 		flags: {},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Soak", target);
+			this.add('-anim', source, "Fake Tears", target);
 		},
 		status: ['psn', 'fear'],
 		// Class: EN
@@ -88,7 +51,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -108,7 +71,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 55,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 95,
 		priority: -6,
 		flags: {protect: 1, contact: 1},
@@ -128,7 +91,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 80,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -148,7 +111,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -163,6 +126,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 					const stats: BoostID[] = [];
 					let stat: BoostID;
 					for (stat in target.boosts) {
+						if (stat === 'accuracy' || stat === 'evasion') continue;
 						if (target.boosts[stat] > -6) {
 							stats.push(stat);
 						}
@@ -189,7 +153,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -199,7 +163,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		volatileStatus: 'amnesia',
 		onTryHit(target) {
-			if (target.hasStatus() || !target.runStatusImmunity('stp')) {
+			if (target.status || !target.runStatusImmunity('stp')) {
 				return false;
 			}
 		},
@@ -226,7 +190,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 70,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -249,7 +213,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -269,7 +233,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -294,7 +258,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -313,7 +277,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -336,7 +300,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {recharge: 1, protect: 1},
@@ -358,7 +322,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -377,7 +341,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -403,7 +367,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 130,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -425,7 +389,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -448,7 +412,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -472,7 +436,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -492,7 +456,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -512,7 +476,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -537,7 +501,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -556,7 +520,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 40,
+		pp: 25.0,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -588,7 +552,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -613,7 +577,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 35,
+		pp: 21.875,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -634,7 +598,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -654,7 +618,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 90,
 		priority: 0,
 		flags: {},
@@ -674,7 +638,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -694,20 +658,17 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 70,
 		priority: 0,
 		flags: {},
-		onPrepareHit: function(target, source, move) {
+		onPrepareHit: function(source, target, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Spore", target);
 		},
 		status: 'stp',
-		onTryHit(source, target, move) {
-			if (target.hasType('Nature')) {
-				this.add('-immune', target);
-				return null;
-			}
+		onTryImmunity(target) {
+			return !target.hasType('Nature');
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -720,7 +681,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -728,7 +689,18 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Sticky Web", target);
 		},
-		sideCondition: 'stickyweb',
+		sideCondition: 'bindtrap',
+		condition: {
+			onSideStart(side) {
+				this.add('-sidestart', side, 'move: Bind Trap');
+			},
+			onSwitchIn(pokemon) {
+				if (!pokemon.isGrounded()) return;
+				if (pokemon.types.includes('Dark')) return;
+				this.add('-activate', pokemon, 'move: Bind Trap');
+				this.boost({spe: -1}, pokemon, this.effectState.source, this.dex.getActiveMove('bindtrap'));
+			},
+		},
 		// Class: EN
 		// Effect Chance: 100
 		// Effect ID: 215
@@ -740,7 +712,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -772,7 +744,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 75,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -797,7 +769,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 50,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -817,7 +789,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -842,13 +814,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 55,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Pursuit", target);
+			this.add('-anim', source, "Sucker Punch", target);
 		},
 		basePowerCallback(pokemon, target, move) {
 			if (this.queue.willMove(target) || target.beingCalledBack || target.switchFlag) {
@@ -858,7 +830,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		beforeTurnCallback(pokemon) {
 			for (const side of this.sides) {
-				if (side.hasAlly(pokemon)) continue;
+				if (side === pokemon.side) continue;
 				side.addSideCondition('blitzkrieg', pokemon);
 				const data = side.getSideConditionData('blitzkrieg');
 				if (!data.sources) {
@@ -868,7 +840,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			}
 		},
 		onModifyMove(move, source, target) {
-			if (target?.beingCalledBack || target?.switchFlag) move.accuracy = true;
+			if (target?.beingCalledBack) move.accuracy = true;
 		},
 		onTryHit(target, pokemon) {
 			target.side.removeSideCondition('blitzkrieg');
@@ -880,12 +852,12 @@ export const Moves: {[moveid: string]: MoveData} = {
 				let alreadyAdded = false;
 				pokemon.removeVolatile('callofthedead');
 				for (const source of this.effectState.sources) {
-					if (!source.isAdjacent(pokemon) || !this.queue.cancelMove(source) || !source.hp) continue;
+					if (!this.queue.cancelMove(source) || !source.hp) continue;
 					if (!alreadyAdded) {
 						this.add('-activate', pokemon, 'move: Blitzkrieg');
 						alreadyAdded = true;
 					}
-					this.actions.runMove('blitzkrieg', source, source.getLocOf(pokemon));
+					this.runMove('blitzkrieg', source, this.getTargetLoc(pokemon, source));
 				}
 			},
 		},
@@ -900,7 +872,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 70,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -923,7 +895,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 70,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
@@ -931,12 +903,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Facade", target);
 		},
-		basePowerCallback(pokemon, target, move) {
-			if (pokemon.hasStatus()) {
-				this.debug('BP doubled from status condition');
-				return move.basePower * 2;
+		onBasePower(basePower, pokemon) {
+			if (pokemon.status && pokemon.status !== 'slp') {
+				return this.chainModify(2);
 			}
-			return move.basePower;
 		},
 	},
 	booing: {
@@ -946,7 +916,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: -6,
 		flags: {},
@@ -966,7 +936,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -986,7 +956,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 120,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1006,7 +976,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1025,7 +995,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1047,7 +1017,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 75,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1067,7 +1037,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 90,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1093,7 +1063,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1122,33 +1092,33 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
-		onPrepareHit: function(target, source, move) {
+		volatileStatus: 'callofthedead',
+		onPrepareHit(target, source) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Destiny Bond", target);
-		},
-		volatileStatus: 'callofthedead',
-		onPrepareHit(pokemon) {
-			return !pokemon.removeVolatile('callofthedead');
+			return !target.removeVolatile('callofthedead');
 		},
 		condition: {
 			onStart(pokemon) {
-				this.add('-singlemove', pokemon, 'Destiny Bond');
+				this.add('-message', `$The dead call upon {source.name}...`);
+				this.add('-singlemove', pokemon, 'Call of the Dead');
 			},
 			onFaint(target, source, effect) {
 				if (!source || !effect || target.isAlly(source)) return;
-				if (effect.effectType === 'Move' && !effect.isFutureMove) {
-					this.add('-activate', target, 'move: Call of the Dead');
+				if (effect.effectType === 'Move' && !effect.flags.futuremove) {
+					this.add('-message', `${source.name} was dragged down by the dead...`);
+					this.add('-activate', target, 'move: Call of the Dead', '[silent]');
 					source.faint();
 				}
 			},
 			onBeforeMovePriority: -1,
 			onBeforeMove(pokemon, target, move) {
 				if (move.id === 'callofthedead') return;
-				this.debug('removing Destiny Bond before attack');
+				this.debug('removing Call of the Dead before attack');
 				pokemon.removeVolatile('callofthedead');
 			},
 			onMoveAborted(pokemon, target, move) {
@@ -1166,7 +1136,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1186,7 +1156,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {recharge: 1, protect: 1, contact: 1},
@@ -1208,7 +1178,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1233,7 +1203,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 70,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1253,7 +1223,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 75,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1273,7 +1243,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 55,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 95,
 		priority: -6,
 		flags: {protect: 1, contact: 1},
@@ -1293,7 +1263,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1313,7 +1283,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1333,7 +1303,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1358,7 +1328,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -1387,7 +1357,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1421,7 +1391,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1441,7 +1411,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 80,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1466,7 +1436,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1489,7 +1459,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -1506,7 +1476,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1539,7 +1509,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -1559,7 +1529,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {heal: 1},
@@ -1579,8 +1549,8 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		onHit(target, source, move) {
 			if (!target.setStatus('stp', source, move)) return false;
-			target.statusData.time = 3;
-			target.statusData.startTime = 3;
+			target.statusState.time = 3;
+			target.statusState.startTime = 3;
 			this.heal(target.maxhp); // Aesthetic only as the healing happens after you fall asleep in-game
 		},
 	},
@@ -1591,7 +1561,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1618,7 +1588,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 85,
 		priority: 0,
 		flags: {},
@@ -1638,7 +1608,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1663,7 +1633,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: -5,
 		flags: {protect: 1, contact: 1, counter: 1},
@@ -1671,17 +1641,31 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Counter", target);
 		},
-		damageCallback(pokemon) {
-			if (!pokemon.volatiles['counter']) return 0;
-			return pokemon.volatiles['counter'].damage || 1;
-		},
 		beforeTurnCallback(pokemon) {
-			pokemon.addVolatile('counter');
-			pokemon.volatiles['counter'].categories = ['Physical'];
+			pokemon.addVolatile('crosscounter');
 		},
-		onTry(source) {
-			if (!source.volatiles['counter']) return false;
-			if (source.volatiles['counter'].slot === null) return false;
+		onTryHit(target, source, move) {
+			if (!source.volatiles['crosscounter']) return false;
+			if (source.volatiles['crosscounter'].position === null) return false;
+		},
+		condition: {
+			duration: 1,
+			noCopy: true,
+			onStart(target, source, move) {
+				this.effectState.position = null;
+				this.effectState.damage = 0;
+			},
+			onRedirectTargetPriority: -1,
+			onRedirectTarget(target, source, source2) {
+				if (source !== this.effectState.target) return;
+				return source.side.foe.active[this.effectState.position];
+			},
+			onDamagingHit(damage, target, source, move) {
+				if (source.side !== target.side && this.getCategory(move) === 'Physical') {
+					this.effectState.position = source.position;
+					this.effectState.damage = 2 * damage;
+				}
+			},
 		},
 		// Class: BU
 		// Effect Chance: 100
@@ -1694,7 +1678,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 100,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1716,7 +1700,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 85,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1739,7 +1723,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1759,7 +1743,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1787,7 +1771,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Physical",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1812,7 +1796,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1832,7 +1816,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1843,7 +1827,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		secondary: {
 			chance: 10,
 			self: {
-				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1, accuracy: 1, evasion: 1}
+				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}
 			}
 		}
 		// Class: 2
@@ -1857,7 +1841,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1884,7 +1868,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1903,7 +1887,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1923,7 +1907,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -1948,7 +1932,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -1968,7 +1952,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -1988,7 +1972,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -2007,7 +1991,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2052,7 +2036,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2077,7 +2061,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2104,7 +2088,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -2124,7 +2108,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2158,7 +2142,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -2179,7 +2163,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {recharge: 1, protect: 1,},
@@ -2201,7 +2185,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 140,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2220,7 +2204,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2255,7 +2239,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 60,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2277,7 +2261,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 70,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2300,7 +2284,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2328,7 +2312,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2337,7 +2321,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Boomburst", target);
 		},
 		self: {
-			boosts: {atk: -1, def: 1}
+			boosts: {atk: -1, def: -1}
 		}
 		// Class: 2
 		// Effect Chance: 1000
@@ -2350,7 +2334,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2373,7 +2357,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: -4,
 		flags: {protect: 1, counter: 1},
@@ -2404,7 +2388,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2438,7 +2422,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2463,7 +2447,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2486,7 +2470,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 50,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2506,7 +2490,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 1,
 		flags: {},
@@ -2529,7 +2513,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {},
@@ -2537,9 +2521,27 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Leech Seed", target);
 		},
-		volatileStatus: 'leechseed',
+		volatileStatus: 'drainseed',
 		onTryImmunity(target) {
 			return !target.hasType('Nature');
+		},
+		condition: {
+			onStart(target) {
+				this.add('-message', `${target.name} was seeded!`);
+				this.add('-start', target, 'move: Drain Seed', '[silent]');
+			},
+			onResidualOrder: 8,
+			onResidual(pokemon) {
+				const target = this.effectState.source.side.active[pokemon.volatiles['drainseed'].sourcePosition];
+				if (!target || target.fainted || target.hp <= 0) {
+					this.debug('Nothing to leech into');
+					return;
+				}
+				const damage = this.damage(pokemon.baseMaxhp / 8, pokemon, target);
+				if (damage) {
+					this.heal(damage, target, pokemon);
+				}
+			},
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -2552,7 +2554,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -2569,7 +2571,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2592,7 +2594,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2615,7 +2617,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2635,7 +2637,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -2654,7 +2656,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2677,7 +2679,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2685,23 +2687,27 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Terrain Pulse", target);
 		},
-		basePowerCallback(pokemon, target, move) {
-			if (this.field.terrain) {
-				switch (this.field.terrain) {
-					case "byakko":
-						move.type = "Steel";
-					case "genbu":
-						move.type = "Water";
-					case "kohryu":
-						move.type = "Earth";
-					case "seiryu":
-						move.type = "Nature";
-					case "suzaku":
-						move.type = "Fire";
-				}
-				return move.basePower * 2;
+		onModifyType(move, pokemon) {
+			switch (this.field.terrain) {
+				case "byakko":
+					move.type = "Steel";
+					break;
+				case "genbu":
+					move.type = "Water";
+					break;
+				case "kohryu":
+					move.type = "Earth";
+					break;
+				case "seiryu":
+					move.type = "Nature";
+					break;
+				case "suzaku":
+					move.type = "Fire";
+					break;
 			}
-			return move.basePower;
+		},
+		onModifyMove(move, pokemon) {
+			if (this.field.terrain) move.basePower *= 2;
 		},
 	},
 	earthlyinfluence: {
@@ -2711,7 +2717,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2719,23 +2725,27 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Terrain Pulse", target);
 		},
-		basePowerCallback(pokemon, target, move) {
-			if (this.field.terrain) {
-				switch (this.field.terrain) {
-					case "byakko":
-						move.type = "Steel";
-					case "genbu":
-						move.type = "Water";
-					case "kohryu":
-						move.type = "Earth";
-					case "seiryu":
-						move.type = "Nature";
-					case "suzaku":
-						move.type = "Fire";
-				}
-				return move.basePower * 2;
+		onModifyType(move, pokemon) {
+			switch (this.field.terrain) {
+				case "byakko":
+					move.type = "Steel";
+					break;
+				case "genbu":
+					move.type = "Water";
+					break;
+				case "kohryu":
+					move.type = "Earth";
+					break;
+				case "seiryu":
+					move.type = "Nature";
+					break;
+				case "suzaku":
+					move.type = "Fire";
+					break;
 			}
-			return move.basePower;
+		},
+		onModifyMove(move, pokemon) {
+			if (this.field.terrain) move.basePower *= 2;
 		},
 	},
 	ebbtide: {
@@ -2745,7 +2755,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -2765,7 +2775,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -2784,7 +2794,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -2796,7 +2806,8 @@ export const Moves: {[moveid: string]: MoveData} = {
 		condition: {
 			noCopy: true,
 			onStart(target, source, sourceEffect) {
-				this.add('-start', target, 'move: Element Reverse');
+				this.add('-message', `${target.name}'s elemental barrier is reversed!`);
+				this.add('-start', target, 'move: Element Reverse', '[silent]');
 			},
 			onEffectiveness(typeMod, target, type, move) {
 				return typeMod * -1;
@@ -2813,7 +2824,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -2826,15 +2837,15 @@ export const Moves: {[moveid: string]: MoveData} = {
 			duration: 3,
 			noCopy: true, // doesn't get copied by Z-Baton Pass
 			onStart(target) {
-				const noEncore = [
-					'assist', 'copycat', 'dynamaxcannon', 'encourage', 'mefirst', 'metronome', 'mimic', 'mirrormove', 'naturepower', 'sketch', 'sleeptalk', 'struggle', 'transform',
+				const noEncourage = [
+					'assist', 'copycat', 'encourage', 'mefirst', 'metronome', 'mimic', 'mirrormove', 'naturepower', 'sketch', 'sleeptalk', 'struggle', 'transform',
 				];
 				let move: Move | ActiveMove | null = target.lastMove;
 				if (!move || target.volatiles['dynamax']) return false;
 
-				if (move.isMax && move.baseMove) move = this.dex.moves.get(move.baseMove);
+				if (move.isMax && move.baseMove) move = this.dex.getMove(move.baseMove);
 				const moveIndex = target.moves.indexOf(move.id);
-				if (move.isZ || noEncore.includes(move.id) || !target.moveSlots[moveIndex] || target.moveSlots[moveIndex].pp <= 0) {
+				if (move.isZ || noEncourage.includes(move.id) || !target.moveSlots[moveIndex] || target.moveSlots[moveIndex].pp <= 0) {
 					// it failed
 					return false;
 				}
@@ -2847,7 +2858,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			onOverrideAction(pokemon, target, move) {
 				if (move.id !== this.effectState.move) return this.effectState.move;
 			},
-			onResidualOrder: 16,
+			onResidualOrder: 13,
 			onResidual(target) {
 				if (target.moves.includes(this.effectState.move) &&
 					target.moveSlots[target.moves.indexOf(this.effectState.move)].pp <= 0) {
@@ -2880,7 +2891,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2900,7 +2911,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2925,7 +2936,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -2950,7 +2961,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -2975,7 +2986,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -2998,7 +3009,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3023,7 +3034,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 50,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3043,7 +3054,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 85,
 		priority: 0,
 		flags: {},
@@ -3063,7 +3074,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3083,7 +3094,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: -6,
 		flags: {},
@@ -3103,7 +3114,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3123,7 +3134,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3159,17 +3170,15 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 4,
 		flags: {},
-		onPrepareHit: function(target, source, move) {
+		volatileStatus: 'falsecourage',
+		onPrepareHit(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Endure", target);
-		},
-		volatileStatus: 'falsecourage',
-		onPrepareHit(pokemon) {
-			return !!this.queue.willAct() && this.runEvent('StallMove', pokemon);
+			return !!this.queue.willAct() && this.runEvent('StallMove', target);
 		},
 		onHit(pokemon) {
 			pokemon.addVolatile('stall');
@@ -3198,7 +3207,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 60,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3217,7 +3226,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3237,7 +3246,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3256,7 +3265,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3274,10 +3283,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 				return 5;
 			},
 			onAnyModifyDamage(damage, source, target, move) {
-				if (target !== source && this.effectState.target.hasAlly(target) && this.getCategory(move) === 'Special') {
+				if (target !== source && target.side === this.effectState.target && this.getCategory(move) === 'Special') {
 					if (!target.getMoveHitData(move).crit && !move.infiltrates) {
 						this.debug('Field Barrier weaken');
-						if (this.activePerHalf > 1) return this.chainModify([2732, 4096]);
+						if (target.side.active.length > 1) return this.chainModify([0xAAC, 0x1000]);
 						return this.chainModify(0.5);
 					}
 				}
@@ -3299,7 +3308,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 75,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3322,7 +3331,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3340,10 +3349,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 				return 5;
 			},
 			onAnyModifyDamage(damage, source, target, move) {
-				if (target !== source && this.effectState.target.hasAlly(target) && this.getCategory(move) === 'Physical') {
+				if (target !== source && target.side === this.effectState.target && this.getCategory(move) === 'Physical') {
 					if (!target.getMoveHitData(move).crit && !move.infiltrates) {
 						this.debug('Field Protect weaken');
-						if (this.activePerHalf > 1) return this.chainModify([2732, 4096]);
+						if (target.side.active.length > 1) return this.chainModify([0xAAC, 0x1000]);
 						return this.chainModify(0.5);
 					}
 				}
@@ -3365,7 +3374,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 4,
 		flags: {bypasssub: 1},
@@ -3374,7 +3383,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Court Change", target);
 		},
 		onHit(target, source, move) {
-			const movedConditions = ['fieldprotect', 'fieldbarrier', 'luckyrainbow', 'substitute'];
+			const movedConditions = ['fieldprotect', 'fieldbarrier', 'luckyrainbow', 'magicbarrier'];
 			let success: string[][] = [];
 			for (const cond of movedConditions) {
 				this.debug('Trying to move ' + cond + ' as sideCondition');
@@ -3415,7 +3424,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3440,7 +3449,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -3459,7 +3468,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3497,7 +3506,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -3522,7 +3531,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -3541,7 +3550,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3555,8 +3564,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 			}
 			return move.basePower;
 		},
-		onHit(target, source, move) {
-			target.clearItem();
+		onAfterHit(target, source) {
+			if (source.hp) {
+				const item = target.takeItem();
+				if (item) {
+					this.add('-enditem', target, item.name, '[from] move: Fire Wall', '[of] ' + source);
+				}
+			}
 		},
 		// Class: 2
 		// Effect Chance: 100
@@ -3569,7 +3583,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3594,7 +3608,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 75,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3614,7 +3628,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3634,7 +3648,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 130,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3665,10 +3679,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
-		flags: {},
+		flags: {heal: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Recover", target);
@@ -3685,7 +3699,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3710,7 +3724,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 80,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3735,7 +3749,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 70,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3760,7 +3774,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -3780,7 +3794,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3800,7 +3814,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -3825,7 +3839,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3850,7 +3864,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 95,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3873,7 +3887,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3892,7 +3906,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3912,7 +3926,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -3932,7 +3946,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 120,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -3952,7 +3966,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 4,
 		flags: {},
@@ -3960,17 +3974,31 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Protect", target);
 		},
-		onTryHit(source, target, move) {
-			if (target.removeVolatile('forceshield')) {
-				this.add('-fail', source);
-				return false;
-			}
+		onTryHit(pokemon) {
+			return !!this.queue.willAct() && this.runEvent('StallMove', pokemon);
+		},
+		onHit(pokemon) {
+			pokemon.addVolatile('stall');
 		},
 		volatileStatus: 'forceshield',
 		condition: {
 			noCopy: true,
+			duration: 1,
+			onStart(target) {
+				this.add('-message', `${target.name} activated its Force Shield!`);
+				this.add('-singleturn', target, 'Force Shield', '[silent]');
+			},
 			onEffectiveness(typeMod, target, type, move) {
 				return 0;
+			},
+			onSourceModifyDamage(damage, source, target, move) {
+				if (move.category === 'Special' || move.category === 'Physical') {
+					return this.clampIntRange(target.getUndynamaxedHP() * 0.0625, 1);
+				}
+			},
+			onEnd(pokemon) {
+				this.add('-message', `${pokemon.name} restored their stance!`);
+				this.add('-end', pokemon, 'move: Force Shield', '[silent]');
 			},
 		}
 		// Class: EN
@@ -3984,7 +4012,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4003,7 +4031,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			let targetAction = this.queue.willMove(target);
 			if (targetAction) {
 				source.addVolatile('foresee');
-				this.actions.useMove(targetAction.move, source, target, move);
+				this.useMove(targetAction.move, source, target, move);
 			}
 		},
 		condition: {
@@ -4024,7 +4052,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4032,10 +4060,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Aromatherapy", target);
 		},
-		onHit(target, source, move) {
-			for (const pokemon of target.side.activeTeam()) {
-				pokemon.clearStatus();
+		onHit(pokemon, source, move) {
+			this.add('-activate', source, 'move: Aromatherapy');
+			let success = false;
+			for (const ally of pokemon.side.pokemon) {
+				if (ally.cureStatus()) success = true;
 			}
+			return success;
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -4048,7 +4079,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4068,7 +4099,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4100,7 +4131,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 100,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4116,7 +4147,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4141,7 +4172,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4160,7 +4191,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 80,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4179,7 +4210,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4199,7 +4230,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 140,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4230,7 +4261,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4250,7 +4281,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4282,7 +4313,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4305,7 +4336,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4328,7 +4359,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4353,7 +4384,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 50,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4373,7 +4404,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4393,7 +4424,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4429,7 +4460,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 75,
 		priority: 0,
 		flags: {},
@@ -4449,10 +4480,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
-		flags: {},
+		flags: {heal: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Synthesis", target);
@@ -4469,7 +4500,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -4492,7 +4523,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4517,7 +4548,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4540,7 +4571,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4560,7 +4591,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4588,7 +4619,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4622,7 +4653,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1},
@@ -4642,7 +4673,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4670,7 +4701,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4689,7 +4720,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4714,7 +4745,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 70,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4734,7 +4765,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4754,7 +4785,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4763,7 +4794,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Close Combat", target);
 		},
 		self: {
-			boosts: {atk: -1, spa: -1}
+			boosts: {def: -1, spd: -1}
 		}
 		// Class: BU
 		// Effect Chance: 1000
@@ -4776,7 +4807,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
@@ -4789,14 +4820,19 @@ export const Moves: {[moveid: string]: MoveData} = {
 				switch (this.field.weather) {
 					case "aurora":
 						move.type = "Light";
+						break;
 					case "calm":
 						move.type = "Wind";
+						break;
 					case "duststorm":
 						move.type = "Earth";
+						break;
 					case "heavyfog":
 						move.type = "Dark";
+						break;
 					case "sunshower":
 						move.type = "Warped";
+						break;
 				}
 				return move.basePower * 2;
 			}
@@ -4810,7 +4846,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
@@ -4818,24 +4854,28 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Weather Ball", target);
 		},
-		basePowerCallback(pokemon, target, move) {
-			if (this.field.weather) {
-				switch (this.field.weather) {
-					case "aurora":
-						move.type = "Light";
-					case "calm":
-						move.type = "Wind";
-					case "duststorm":
-						move.type = "Earth";
-					case "heavyfog":
-						move.type = "Dark";
-					case "sunshower":
-						move.type = "Warped";
-				}
-				return move.basePower * 2;
+		onModifyType(move, pokemon) {
+			switch (pokemon.effectiveWeather()) {
+				case "aurora":
+					move.type = "Light";
+					break;
+				case "calm":
+					move.type = "Wind";
+					break;
+				case "duststorm":
+					move.type = "Earth";
+					break;
+				case "heavyfog":
+					move.type = "Dark";
+					break;
+				case "sunshower":
+					move.type = "Warped";
+					break;
 			}
-			return move.basePower;
 		},
+		onModifyMove(move, pokemon) {
+			if (this.field.weather) move.basePower *= 2;
+		}
 	},
 	heavyrain: {
 		name: "Heavy Rain",
@@ -4844,7 +4884,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4864,7 +4904,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -4891,7 +4931,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4910,7 +4950,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -4951,7 +4991,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 100,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -4976,7 +5016,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -5001,7 +5041,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5021,7 +5061,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Physical",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5040,7 +5080,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5063,7 +5103,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5086,7 +5126,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 15,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -5106,7 +5146,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5122,7 +5162,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -5141,7 +5181,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5166,7 +5206,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5192,7 +5232,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5217,7 +5257,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5237,7 +5277,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5262,7 +5302,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5287,7 +5327,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Special",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5307,7 +5347,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 20,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5330,7 +5370,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5356,7 +5396,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5376,7 +5416,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5395,7 +5435,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5428,7 +5468,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5448,7 +5488,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 80,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: -4,
 		flags: {bypasssub: 1},
@@ -5474,7 +5514,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5493,13 +5533,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Imprison", target);
+			this.add('-anim', source, "Disable", target);
 		},
 		volatileStatus: 'jinx',
 		onTryHit(target) {
@@ -5567,7 +5607,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 70,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5587,7 +5627,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5611,7 +5651,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 140,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5641,7 +5681,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 100,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5663,7 +5703,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5686,7 +5726,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5705,7 +5745,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -5728,7 +5768,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5747,7 +5787,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -5766,7 +5806,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 55,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5786,7 +5826,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5845,7 +5885,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5870,7 +5910,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 70,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5890,7 +5930,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -5913,7 +5953,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -5937,7 +5977,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5965,7 +6005,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -5989,7 +6029,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 25,
+		pp: 15.625,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6032,7 +6072,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 60,
 		priority: 0,
 		flags: {},
@@ -6052,7 +6092,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 120,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6072,7 +6112,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 80,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6092,7 +6132,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 80,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6115,7 +6155,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6134,7 +6174,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		target: "self",
 		type: "Void",
 		category: "Status",
-		pp: 10,
+		pp: 6.25,
 		basePower: 0,
 		accuracy: true,
 		priority: 0,
@@ -6143,7 +6183,69 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Substitute", target);
 		},
-		volatileStatus: 'substitute',
+		volatileStatus: 'magicbarrier',
+		onTryHit(target) {
+			if (target.volatiles['magicbarrier']) {
+				this.add('-fail', target, 'move: Magic Barrier');
+				return null;
+			}
+			if (target.hp <= target.maxhp / 4 || target.maxhp === 1) { // Shedinja clause
+				this.add('-fail', target, 'move: Magic Barrier', '[weak]');
+				return null;
+			}
+		},
+		onHit(target) {
+			this.directDamage(target.maxhp / 4);
+		},
+		condition: {
+			onStart(target) {
+				this.add('-message', `${target.name} created a Magic Barrier!`);
+				this.add('-start', target, 'Magic Barrier', '[silent]');
+				this.effectState.hp = Math.floor(target.maxhp / 4);
+				if (target.volatiles['partiallytrapped']) {
+					this.add('-end', target, target.volatiles['partiallytrapped'].sourceEffect, '[partiallytrapped]', '[silent]');
+					delete target.volatiles['partiallytrapped'];
+				}
+			},
+			onTryPrimaryHitPriority: -1,
+			onTryPrimaryHit(target, source, move) {
+				if (target === source || move.flags['authentic'] || move.infiltrates) {
+					return;
+				}
+				let damage = this.actions.getDamage(source, target, move);
+				if (!damage && damage !== 0) {
+					this.add('-fail', source);
+					this.attrLastMove('[still]');
+					return null;
+				}
+				damage = this.runEvent('SubDamage', target, source, move, damage);
+				if (!damage) {
+					return damage;
+				}
+				if (damage > target.volatiles['magicbarrier'].hp) {
+					damage = target.volatiles['magicbarrier'].hp as number;
+				}
+				target.volatiles['magicbarrier'].hp -= damage;
+				source.lastDamage = damage;
+				if (target.volatiles['magicbarrier'].hp <= 0) {
+					target.removeVolatile('magicbarrier');
+				} else {
+					this.add('-activate', target, 'move: Magic Barrier', '[damage]');
+				}
+				if (move.recoil) {
+					this.damage(this.calcRecoilDamage(damage, move), source, target, 'recoil');
+				}
+				if (move.drain) {
+					this.heal(Math.ceil(damage * move.drain[0] / move.drain[1]), source, target, 'drain');
+				}
+				this.singleEvent('AfterSubDamage', move, null, target, source, move, damage);
+				this.runEvent('AfterSubDamage', target, source, move, damage);
+				return this.HIT_SUBSTITUTE;
+			},
+			onEnd(target) {
+				this.add('-end', target, 'Magic Barrier');
+			},
+		},
 	},
 	merrydance: {
 		name: "Merry Dance",
@@ -6152,7 +6254,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6172,7 +6274,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 65,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6196,7 +6298,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 150,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: -3,
 		flags: {protect: 1, contact: 1},
@@ -6221,7 +6323,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {},
@@ -6245,7 +6347,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6265,7 +6367,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -6287,7 +6389,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6295,7 +6397,25 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Spikes", target);
 		},
-		sideCondition: 'spikes',
+		sideCondition: 'minetrap',
+		condition: {
+			// this is a side condition
+			onStart(side) {
+				this.add('-sidestart', side, 'minetrap');
+				this.effectState.layers = 1;
+			},
+			onRestart(side) {
+				if (this.effectState.layers >= 3) return false;
+				this.add('-sidestart', side, 'minetrap');
+				this.effectState.layers++;
+			},
+			onSwitchIn(pokemon) {
+				if (!pokemon.isGrounded()) return;
+				if (pokemon.hasItem('tengugeta')) return;
+				const damageAmounts = [0, 3, 4, 6]; // 1/8, 1/6, 1/4
+				this.damage(damageAmounts[this.effectState.layers] * pokemon.maxhp / 24);
+			},
+		},
 		// Class: EN
 		// Effect Chance: 100
 		// Effect ID: 217
@@ -6307,7 +6427,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 20,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6330,7 +6450,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 4,
 		flags: {},
@@ -6348,7 +6468,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 				const newMove = this.dex.getActiveMove(move.id);
 				newMove.hasBounced = true;
 				newMove.pranksterBoosted = false;
-				this.actions.useMove(newMove, target, source);
+				this.useMove(newMove, target, source);
 				return null;
 			},
 		}
@@ -6363,7 +6483,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6383,7 +6503,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: -4,
 		flags: {protect: 1, counter: 1},
@@ -6414,7 +6534,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6437,7 +6557,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6487,7 +6607,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6506,7 +6626,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6526,7 +6646,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: -5,
 		flags: {protect: 1, counter: 1},
@@ -6534,17 +6654,31 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Mirror Coat", target);
 		},
-		damageCallback(pokemon) {
-			if (!pokemon.volatiles['counter']) return 0;
-			return pokemon.volatiles['counter'].damage || 1;
-		},
 		beforeTurnCallback(pokemon) {
-			pokemon.addVolatile('counter');
-			pokemon.volatiles['counter'].categories = ['Special'];
+			pokemon.addVolatile('moonsreflection');
 		},
-		onTry(source) {
-			if (!source.volatiles['counter']) return false;
-			if (source.volatiles['counter'].slot === null) return false;
+		onTryHit(target, source, move) {
+			if (!source.volatiles['moonsreflection']) return false;
+			if (source.volatiles['moonsreflection'].position === null) return false;
+		},
+		condition: {
+			duration: 1,
+			noCopy: true,
+			onStart(target, source, move) {
+				this.effectState.position = null;
+				this.effectState.damage = 0;
+			},
+			onRedirectTargetPriority: -1,
+			onRedirectTarget(target, source, source2) {
+				if (source !== this.effectState.target) return;
+				return source.side.foe.active[this.effectState.position];
+			},
+			onDamagingHit(damage, target, source, move) {
+				if (source.side !== target.side && this.getCategory(move) === 'Special') {
+					this.effectState.position = source.position;
+					this.effectState.damage = 2 * damage;
+				}
+			},
 		},
 		// Class: 2
 		// Effect Chance: 100
@@ -6557,7 +6691,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6591,7 +6725,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6610,7 +6744,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 75,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 80,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6633,7 +6767,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6652,7 +6786,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6661,7 +6795,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Scald", target);
 		},
 		basePowerCallback(pokemon, target, move) {
-			if (target.hasStatus(['psn', 'tox']))
+			if (target.status === 'psn' || target.status === 'tox')
 				return move.basePower * 2;
 			return move.basePower;
 		},
@@ -6676,7 +6810,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 80,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6696,7 +6830,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6716,7 +6850,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 75,
 		priority: 0,
 		flags: {},
@@ -6736,7 +6870,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6759,7 +6893,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -6778,7 +6912,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6794,7 +6928,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		onHit(target, source, move) {
 			if (source.lastMoveUsed)
-				this.actions.useMove(source.lastMoveUsed, source, target, move);
+				this.useMove(source.lastMoveUsed, source, target, move);
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -6807,7 +6941,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 60,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6829,7 +6963,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -6848,7 +6982,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6867,7 +7001,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6886,7 +7020,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -6906,7 +7040,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 130,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6928,7 +7062,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -6953,7 +7087,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1,},
@@ -6972,7 +7106,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 130,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -6980,7 +7114,9 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Zap Cannon", target);
 		},
-		boosts: {atk: -2}
+		self: {
+			boosts: {atk: -2}
+		}
 		// Class: 2
 		// Effect Chance: 100
 		// Effect ID: 234
@@ -6992,7 +7128,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 100,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7011,7 +7147,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 120,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7031,7 +7167,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -7050,7 +7186,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7084,7 +7220,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -7104,7 +7240,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 50,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7124,7 +7260,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
@@ -7147,7 +7283,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 120,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7167,10 +7303,11 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
-		flags: {},
+		flags: {heal: 1},
+		heal: [1, 2],
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Roost", target);
@@ -7180,9 +7317,14 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		condition: {
 			duration: 1,
-			onResidualOrder: 25,
+			onResidualOrder: 20,
 			onStart(target) {
 				this.add('-singleturn', target, 'move: Perch');
+			},
+			onTypePriority: -1,
+			onType(types, pokemon) {
+				this.effectState.typeWas = types;
+				return types.filter(type => type !== 'Wind');
 			},
 		},
 		// Class: EN
@@ -7196,7 +7338,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 0,
-		pp: 8,
+		pp: 6.25,
 		accuracy: 30,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7216,7 +7358,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7236,24 +7378,28 @@ export const Moves: {[moveid: string]: MoveData} = {
 		// Effect Chance: 100
 		// Effect ID: 150
 	},
-	phantasmagoria: { // Unused
-		name: "Phantasmagoria",
-		shortDesc: "Lowers the foe's FoAtk.",
+	phantomensemble: {
+		name: "Phantom Ensemble",
+		shortDesc: "Lowers the target's Atk by 1.",
 		target: "normal",
-		type: "Void",
+		type: "Sound",
 		category: "Physical",
-		basePower: 50,
+		basePower: 55,
 		pp: 15,
-		accuracy: 100,
+		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Round", target);
+			this.add('-anim', source, "Snarl", target);
 		},
-		// Class: EN
-		// Effect Chance: 100
-		// Effect ID: 0
+		secondary: {
+			chance: 100,
+			boosts: {atk: -1}
+		}
+		// Class: 2
+		// Effect Chance: 1000
+		// Effect ID: 34
 	},
 	phaseinversion: {
 		name: "Phase Inversion",
@@ -7262,7 +7408,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 1,
 		flags: {},
@@ -7270,13 +7416,16 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Topsy-Turvy", target);
 		},
-		onHit(target, source, move) {
-			const boosts = target.boosts as SparseBoostsTable;
-			let b:BoostID;
-			for (b in boosts) {
-				boosts[b]! *= -1;
+		onHit(target) {
+			let success = false;
+			let i: BoostName;
+			for (i in target.boosts) {
+				if (target.boosts[i] === 0) continue;
+				target.boosts[i] = -target.boosts[i];
+				success = true;
 			}
-			target.setBoost(boosts);
+			if (!success) return false;
+			this.add('-invertboost', target, '[from] move: Phase Inversion');
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -7289,7 +7438,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7314,7 +7463,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 70,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7336,7 +7485,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 20,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7356,7 +7505,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7379,7 +7528,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7402,7 +7551,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -7421,7 +7570,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7440,7 +7589,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7448,7 +7597,31 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Toxic Spikes", target);
 		},
-		sideCondition: 'toxicspikes',
+		sideCondition: 'poisontrap',
+		condition: {
+			// this is a side condition
+			onStart(side) {
+				this.add('-sidestart', side, 'move: Poison Trap');
+				this.effectState.layers = 1;
+			},
+			onRestart(side) {
+				if (this.effectState.layers >= 2) return false;
+				this.add('-sidestart', side, 'move: Poison Trap');
+				this.effectState.layers++;
+			},
+			onSwitchIn(pokemon) {
+				if (pokemon.hasType('Poison')) {
+					this.add('-sideend', pokemon.side, 'move: Poison Trap', '[of] ' + pokemon);
+					pokemon.side.removeSideCondition('poisontrap');
+				} else if (pokemon.hasType('Steel') || pokemon.hasItem(['heavydutyboots', 'tengugeta']) || pokemon.hasAbility(['strictdosage'])) {
+					return;
+				} else if (this.effectState.layers >= 2) {
+					pokemon.trySetStatus('tox', pokemon.side.foe.active[0]);
+				} else {
+					pokemon.trySetStatus('psn', pokemon.side.foe.active[0]);
+				}
+			},
+		},
 		// Class: EN
 		// Effect Chance: 100
 		// Effect ID: 216
@@ -7460,7 +7633,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7484,7 +7657,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7507,7 +7680,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7530,7 +7703,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7552,7 +7725,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7572,7 +7745,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7600,10 +7773,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: true,
 		priority: 0,
-		flags: {},
+		flags: {heal: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Wish", target);
@@ -7635,7 +7808,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7669,7 +7842,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7691,7 +7864,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 1,
 		flags: {},
@@ -7700,7 +7873,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Conversion", target);
 		},
 		onHit(target, source, move) {
-			const type = this.dex.moves.get(target.moveSlots[0].id).type;
+			const type = this.dex.getMove(target.moveSlots[0].id).type;
 			if (target.hasType(type) || !target.setType(type)) return false;
 			this.add('-start', target, 'typechange', type);
 		},
@@ -7715,7 +7888,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 75,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7740,7 +7913,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7774,7 +7947,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {recharge: 1, protect: 1,},
@@ -7796,7 +7969,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -7819,7 +7992,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7843,7 +8016,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7868,7 +8041,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -7891,7 +8064,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 50,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -7909,7 +8082,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		beforeTurnCallback(pokemon) {
 			for (const side of this.sides) {
-				if (side.hasAlly(pokemon)) continue;
+				if (side === pokemon.side) continue;
 				side.addSideCondition('pursuit', pokemon);
 				const data = side.getSideConditionData('pursuit');
 				if (!data.sources) {
@@ -7919,7 +8092,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			}
 		},
 		onModifyMove(move, source, target) {
-			if (target?.beingCalledBack || target?.switchFlag) move.accuracy = true;
+			if (target?.beingCalledBack) move.accuracy = true;
 		},
 		onTryHit(target, pokemon) {
 			target.side.removeSideCondition('pursuit');
@@ -7931,12 +8104,23 @@ export const Moves: {[moveid: string]: MoveData} = {
 				let alreadyAdded = false;
 				pokemon.removeVolatile('destinybond');
 				for (const source of this.effectState.sources) {
-					if (!source.isAdjacent(pokemon) || !this.queue.cancelMove(source) || !source.hp) continue;
+					if (!this.queue.cancelMove(source) || !source.hp) continue;
 					if (!alreadyAdded) {
 						this.add('-activate', pokemon, 'move: Pursuit');
 						alreadyAdded = true;
 					}
-					this.actions.runMove('pursuit', source, source.getLocOf(pokemon));
+					// Run through each action in queue to check if the Pursuit user is supposed to Mega Evolve this turn.
+					// If it is, then Mega Evolve before moving.
+					if (source.canMegaEvo || source.canUltraBurst) {
+						for (const [actionIndex, action] of this.queue.entries()) {
+							if (action.pokemon === source && action.choice === 'megaEvo') {
+								this.runMegaEvo(source);
+								this.queue.list.splice(actionIndex, 1);
+								break;
+							}
+						}
+					}
+					this.runMove('pursuit', source, this.getTargetLoc(pokemon, source));
 				}
 			},
 		},
@@ -7951,7 +8135,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -7971,7 +8155,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -7991,7 +8175,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 40,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 3,
 		flags: {protect: 1, contact: 1},
@@ -8020,7 +8204,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, charge: 1},
@@ -8055,7 +8239,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 85,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8077,7 +8261,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8097,7 +8281,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8117,7 +8301,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8138,7 +8322,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8159,7 +8343,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8180,7 +8364,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8201,7 +8385,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8222,7 +8406,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -8244,7 +8428,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 130,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8266,7 +8450,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 3,
 		flags: {},
@@ -8290,7 +8474,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8318,7 +8502,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8351,7 +8535,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -8377,7 +8561,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 70,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8402,7 +8586,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8421,7 +8605,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: -4,
 		flags: {protect: 1, counter: 1},
@@ -8452,7 +8636,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8472,7 +8656,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Physical",
 		basePower: 50,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8494,7 +8678,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -8514,7 +8698,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 70,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8534,7 +8718,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8554,7 +8738,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8573,7 +8757,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -8593,7 +8777,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 75,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8616,7 +8800,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -8636,7 +8820,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -8686,7 +8870,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8706,7 +8890,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8729,7 +8913,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8738,9 +8922,9 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Night Slash", target);
 		},
 		secondary: {
-			chance: 70,
+			chance: 10,
 			self: {
-				boosts: {spa: 1}
+				boosts: {atk: 1}
 			}
 		}
 		// Class: BU
@@ -8754,7 +8938,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -8774,7 +8958,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8793,7 +8977,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -8822,7 +9006,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8843,7 +9027,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8864,7 +9048,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8885,7 +9069,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8906,7 +9090,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -8927,7 +9111,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -8950,7 +9134,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -8969,7 +9153,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -8992,7 +9176,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 30,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 2,
 		flags: {contact: 1},
@@ -9011,7 +9195,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -9063,7 +9247,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -9083,7 +9267,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 0,
-		pp: 8,
+		pp: 5.0,
 		accuracy: 30,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9103,7 +9287,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 35,
+		pp: 21.875,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -9123,7 +9307,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -9160,7 +9344,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 85,
 		priority: 0,
 		flags: {},
@@ -9184,7 +9368,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9204,7 +9388,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9223,7 +9407,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -9245,7 +9429,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -9267,7 +9451,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9292,7 +9476,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -9312,7 +9496,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -9332,7 +9516,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9351,7 +9535,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9374,7 +9558,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 55,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9394,7 +9578,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 55,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9414,41 +9598,34 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 60,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
+		beforeTurnCallback(pokemon) {
+			pokemon.addVolatile('smashspin');
+		},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Rapid Spin", target);
 		},
-		onAfterHit(target, pokemon) {
-			if (pokemon.hp && pokemon.removeVolatile('leechseed')) {
-				this.add('-end', pokemon, 'Drain Seed', '[from] move: Smash Spin', '[of] ' + pokemon);
-			}
-			const sideConditions = ['stickyweb', 'spikes', 'toxicspikes', 'gmaxsteelsurge'];
-			for (const condition of sideConditions) {
-				if (pokemon.hp && pokemon.side.removeSideCondition(condition)) {
-					this.add('-sideend', pokemon.side, this.dex.getEffect(condition).name, '[from] move: Smash Spin', '[of] ' + pokemon);
+		condition: {
+			duration: 1,
+			onUpdate (pokemon) {
+				if (pokemon.moveThisTurn !== 'smashspin') return;
+				if (pokemon.hp) {
+					if(pokemon.removeVolatile('drainseed')) this.add('-end', pokemon, 'Drain Seed', '[from] move: Smash Spin', '[of] ' + pokemon);
+					const sideConditions = ['bindtrap', 'minetrap', 'poisontrap', 'stealthtrap'];
+					for (const condition of sideConditions) {
+						if (pokemon.hp && pokemon.side.removeSideCondition(condition)) {
+							this.add('-sideend', pokemon.side, this.dex.getEffect(condition).name, '[from] move: Smash Spin', '[of] ' + pokemon);
+						}
+					}
+					if (pokemon.hp && pokemon.volatiles['partiallytrapped']) {
+						pokemon.removeVolatile('partiallytrapped');
+					}
 				}
-			}
-			if (pokemon.hp && pokemon.volatiles['partiallytrapped']) {
-				pokemon.removeVolatile('partiallytrapped');
-			}
-		},
-		onAfterSubDamage(damage, target, pokemon) {
-			if (pokemon.hp && pokemon.removeVolatile('drainseed')) {
-				this.add('-end', pokemon, 'Drain Seed', '[from] move: Smash Spin', '[of] ' + pokemon);
-			}
-			const sideConditions = ['stickyweb', 'spikes', 'toxicspikes', 'gmaxsteelsurge'];
-			for (const condition of sideConditions) {
-				if (pokemon.hp && pokemon.side.removeSideCondition(condition)) {
-					this.add('-sideend', pokemon.side, this.dex.getEffect(condition).name, '[from] move: Smash Spin', '[of] ' + pokemon);
-				}
-			}
-			if (pokemon.hp && pokemon.volatiles['partiallytrapped']) {
-				pokemon.removeVolatile('partiallytrapped');
-			}
+			},
 		},
 	},
 	smogshot: {
@@ -9458,7 +9635,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 55,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9481,7 +9658,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 80,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -9507,7 +9684,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9530,7 +9707,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 80,
 		priority: 0,
 		flags: {},
@@ -9551,7 +9728,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9570,7 +9747,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 55,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9590,7 +9767,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 80,
 		priority: 0,
 		flags: {},
@@ -9611,7 +9788,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9622,7 +9799,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		secondary: {
 			chance: 10,
 			self: {
-				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1, accuracy: 1, evasion: 1}
+				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}
 			}
 		}
 		// Class: BU
@@ -9636,7 +9813,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9655,7 +9832,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 55,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9678,7 +9855,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -9697,7 +9874,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9717,7 +9894,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -9740,7 +9917,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 55,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9763,7 +9940,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9786,7 +9963,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 90,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9809,7 +9986,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 140,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9828,7 +10005,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -9848,7 +10025,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 95,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9871,7 +10048,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 70,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9896,7 +10073,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -9916,7 +10093,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1,},
@@ -9935,7 +10112,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: -6,
 		flags: {},
@@ -9952,13 +10129,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Physical",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Incinerate", target);
+			this.add('-anim', source, "Flame Wheel", target);
 		},
 		onBasePower(basePower, source, target, move) {
 			const item = target.getItem();
@@ -9986,7 +10163,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, contact: 1, charge: 1},
@@ -10024,7 +10201,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10047,7 +10224,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10066,7 +10243,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, contact: 1, bypasssub: 1},
@@ -10085,7 +10262,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10093,7 +10270,19 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Stealth Rock", target);
 		},
-		sideCondition: 'gmaxsteelsurge',
+		sideCondition: 'stealthtrap',
+		condition: {
+			onStart(side) {
+				this.add('-sidestart', side, 'stealthtrap');
+			},
+			onSwitchIn(pokemon) {
+				if (pokemon.hasItem('tengugeta')) return;
+				const steelHazard = this.dex.getActiveMove('Stealth Rock');
+				steelHazard.type = 'Steel';
+				const typeMod = this.clampIntRange(pokemon.runEffectiveness(steelHazard), -6, 6);
+				this.damage(pokemon.maxhp * Math.pow(2, typeMod) / 8);
+			},
+		},
 		// Class: EN
 		// Effect Chance: 100
 		// Effect ID: 214
@@ -10105,7 +10294,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -10124,7 +10313,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10135,7 +10324,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		secondary: {
 			chance: 10,
 			self: {
-				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1, accuracy: 1, evasion: 1}
+				boosts: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}
 			}
 		}
 		// Class: BU
@@ -10149,7 +10338,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10171,7 +10360,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10194,7 +10383,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Physical",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10214,7 +10403,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10237,7 +10426,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10257,7 +10446,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -10276,7 +10465,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dream",
 		category: "Physical",
 		basePower: 51,
-		pp: 35,
+		pp: 21.875,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10295,7 +10484,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Physical",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
@@ -10318,7 +10507,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 40,
+		pp: 25.0,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10344,17 +10533,16 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 4,
 		flags: {},
-		onPrepareHit: function(target, source, move) {
-			this.attrLastMove('[still]');
-			this.add('-anim', source, "Protect", target);
-		},
+
 		stallingMove: true,
 		volatileStatus: 'supernaturalborder',
 		onPrepareHit(pokemon) {
+			this.attrLastMove('[still]');
+			this.add('-anim', source, "Protect", target);
 			return !!this.queue.willAct() && this.runEvent('StallMove', pokemon);
 		},
 		onHit(pokemon) {
@@ -10390,7 +10578,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 80,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 2,
 		flags: {protect: 1, contact: 1},
@@ -10409,7 +10597,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 130,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10418,7 +10606,6 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.add('-anim', source, "Gunk Shot", target);
 		},
 		self: {
-			chance: 10,
 			boosts: {spa: -2}
 		},
 		// Class: 2
@@ -10432,7 +10619,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 90,
 		priority: 0,
 		flags: {},
@@ -10452,7 +10639,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, bypasssub: 1},
@@ -10471,7 +10658,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Special",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10490,7 +10677,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10510,7 +10697,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10530,7 +10717,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10550,7 +10737,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: -7,
 		flags: {},
@@ -10570,7 +10757,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10590,7 +10777,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: -1,
 		flags: {},
@@ -10610,7 +10797,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -10630,7 +10817,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Physical",
 		basePower: 60,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10650,7 +10837,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {},
@@ -10658,7 +10845,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Will-o-Wisp", target);
 		},
-		status: 'brnheavy'
+		status: 'hvybrn'
 		// Class: EN
 		// Effect Chance: 100
 		// Effect ID: 28
@@ -10670,7 +10857,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10705,17 +10892,15 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 4,
 		flags: {},
-		onPrepareHit: function(target, source, move) {
-			this.attrLastMove('[still]');
-			this.add('-anim', source, "Spiky Shield", target);
-		},
 		stallingMove: true,
 		volatileStatus: 'thornedivy',
 		onPrepareHit(pokemon) {
+			this.attrLastMove('[still]');
+			this.add('-anim', source, "Spiky Shield", target);
 			return !!this.queue.willAct() && this.runEvent('StallMove', pokemon);
 		},
 		onHit(pokemon) {
@@ -10756,7 +10941,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10780,7 +10965,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Physical",
 		basePower: 70,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -10800,7 +10985,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10823,7 +11008,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 80,
 		priority: 0,
 		flags: {},
@@ -10844,7 +11029,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Status",
 		basePower: 0,
-		pp: 1,
+		pp: 0.625,
 		accuracy: true,
 		priority: 3,
 		flags: {},
@@ -10867,7 +11052,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Electric",
 		category: "Special",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10890,7 +11075,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 40,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -10909,7 +11094,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10928,7 +11113,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 65,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10951,7 +11136,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -10971,7 +11156,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 1,
 		flags: {protect: 1, contact: 1},
@@ -10990,7 +11175,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11022,7 +11207,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 40,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11053,7 +11238,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11073,7 +11258,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11092,7 +11277,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Special",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11112,7 +11297,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 50,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11132,7 +11317,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 25,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11152,7 +11337,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11160,13 +11345,15 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Hyper Voice", target);
 		},
-		secondary: {
-			chance: 10,
+		self: {
+			//chance: 10,
 			onHit(target, source, move) {
+				if (this.randomChance(9, 10)) return;
 				const stats: BoostID[] = [];
 				let stat: BoostID;
-				for (stat in target.boosts) {
-					if (target.boosts[stat] < 6) {
+				for (stat in source.boosts) {
+					if (stat === 'accuracy' || stat === 'evasion') continue;
+					if (source.boosts[stat] < 6) {
 						stats.push(stat);
 					}
 				}
@@ -11192,7 +11379,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11202,7 +11389,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		},
 		sleepUsable: true,
 		onTry(source) {
-			return source.hasStatus('stp') || source.hasAbility('comatose');
+			return source.status === 'stp' || source.hasAbility('comatose');
 		},
 		onHit(pokemon) {
 			const noSleepTalk = [
@@ -11212,7 +11399,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			for (const moveSlot of pokemon.moveSlots) {
 				const moveid = moveSlot.id;
 				if (!moveid) continue;
-				const move = this.dex.moves.get(moveid);
+				const move = this.dex.getMove(moveid);
 				if (noSleepTalk.includes(moveid) || move.flags['charge'] || (move.isZ && move.basePower !== 1) || move.isMax) {
 					continue;
 				}
@@ -11223,7 +11410,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			if (!randomMove) {
 				return false;
 			}
-			this.actions.useMove(randomMove, pokemon);
+			this.useMove(randomMove, pokemon);
 		},
 		// Class: EN
 		// Effect Chance: 100
@@ -11236,7 +11423,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Special",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11256,7 +11443,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nether",
 		category: "Physical",
 		basePower: 55,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11280,7 +11467,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11303,7 +11490,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11326,7 +11513,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {},
@@ -11349,7 +11536,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 			},
 			onDisableMove(pokemon) {
 				for (const moveSlot of pokemon.moveSlots) {
-					const move = this.dex.moves.get(moveSlot.id);
+					const move = this.dex.getMove(moveSlot.id);
 					if (move.category === 'Status') {
 						pokemon.disableMove(moveSlot.id);
 					}
@@ -11371,7 +11558,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fighting",
 		category: "Physical",
 		basePower: 150,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {recharge: 1, protect: 1, contact: 1},
@@ -11393,15 +11580,17 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 40,
-		pp: 25,
+		pp: 15.625,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
-			this.add('-anim', source, "Water Sport", target);
+			this.add('-anim', source, "Whirlpool", target);
 		},
-		sideCondition: 'veilofwater',
+		self: {
+			sideCondition: 'veilofwater',
+		},
 		condition: {
 			duration: 5,
 			onBoost(boost, target, source, effect) {
@@ -11440,7 +11629,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 80,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11463,7 +11652,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Physical",
 		basePower: 120,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 85,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11486,7 +11675,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Poison",
 		category: "Special",
 		basePower: 120,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11515,7 +11704,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Steel",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11535,7 +11724,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Physical",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11558,7 +11747,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Special",
 		basePower: 130,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 90,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11580,7 +11769,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Special",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11599,7 +11788,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Sound",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11607,12 +11796,14 @@ export const Moves: {[moveid: string]: MoveData} = {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Hyper Voice", target);
 		},
-		secondary: {
-			chance: 10,
+		self: {
+			//chance: 10,
 			onHit(target, source, move) {
+				if (this.randomChance(9, 10)) return;
 				const stats: BoostID[] = [];
 				let stat: BoostID;
 				for (stat in target.boosts) {
+					if (stat === 'accuracy' || stat === 'evasion') continue;
 					if (target.boosts[stat] < 6) {
 						stats.push(stat);
 					}
@@ -11638,7 +11829,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -11657,7 +11848,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 60,
-		pp: 30,
+		pp: 18.75,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11676,7 +11867,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -11695,7 +11886,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Water",
 		category: "Physical",
 		basePower: 100,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11714,7 +11905,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Special",
 		basePower: 95,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11737,7 +11928,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Light",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11757,7 +11948,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11777,7 +11968,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Earth",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11797,7 +11988,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dark",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11817,7 +12008,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Warped",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11837,7 +12028,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 65,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -11862,10 +12053,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: true,
 		priority: 0,
-		flags: {},
+		flags: {heal: 1},
 		onPrepareHit: function(target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Lunar Dance", target);
@@ -11899,7 +12090,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Nature",
 		category: "Status",
 		basePower: 0,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -11919,7 +12110,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Void",
 		category: "Physical",
 		basePower: 125,
-		pp: 5,
+		pp: 3.125,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1},
@@ -11951,7 +12142,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Fire",
 		category: "Status",
 		basePower: 0,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 85,
 		priority: 0,
 		flags: {},
@@ -11971,7 +12162,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Status",
 		basePower: 0,
-		pp: 30,
+		pp: 18.75,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -12011,7 +12202,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 80,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, contact: 1, javelin: 1},
@@ -12034,7 +12225,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 60,
-		pp: 10,
+		pp: 6.25,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1, sign: 1},
@@ -12053,7 +12244,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 60,
-		pp: 20,
+		pp: 12.5,
 		accuracy: true,
 		priority: 0,
 		flags: {protect: 1,},
@@ -12072,7 +12263,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Special",
 		basePower: 75,
-		pp: 15,
+		pp: 9.375,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -12095,7 +12286,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Wind",
 		category: "Physical",
 		basePower: 55,
-		pp: 20,
+		pp: 12.5,
 		accuracy: 95,
 		priority: 0,
 		flags: {protect: 1,},
@@ -12115,7 +12306,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Illusion",
 		category: "Status",
 		basePower: 0,
-		pp: 5,
+		pp: 3.125,
 		accuracy: true,
 		priority: 0,
 		flags: {},
@@ -12175,7 +12366,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dream",
 		category: "Special",
 		basePower: 55,
-		pp: 35,
+		pp: 21.875,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1,},
@@ -12194,7 +12385,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		type: "Dream",
 		category: "Physical",
 		basePower: 55,
-		pp: 35,
+		pp: 21.875,
 		accuracy: 100,
 		priority: 0,
 		flags: {protect: 1},
